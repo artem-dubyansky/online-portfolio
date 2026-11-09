@@ -445,84 +445,193 @@ function drawRoute() {
 }
 
 function renderPortfolio() {
-  app.innerHTML = `<section class="page">${pageHeader("portfolio")}
+  const profile = { city: "", school: "", interests: "", skills: "", ...(data.profile || {}) };
+  data.profile = profile;
+  app.innerHTML = \`<section class="page">\${pageHeader("portfolio")}
     <div class="form-card">
-      <h2>Мой профиль</h2>
-      <div class="form-group"><label for="profile-name">Имя или псевдоним</label><input id="profile-name" maxlength="80" value="${escapeHTML(data.profile.name)}"></div>
-      <div class="form-group"><label for="profile-grade">Класс или курс (необязательно)</label><input id="profile-grade" maxlength="30" value="${escapeHTML(data.profile.grade)}"></div>
-      <button class="primary-button" id="profile-save">Сохранить профиль</button>
+      <h2>Анкета ученика</h2>
+      <div class="form-group"><label for="profile-name">ФИО или имя для портфолио</label><input id="profile-name" maxlength="100" value="\${escapeHTML(profile.name)}"></div>
+      <div class="form-group"><label for="profile-grade">Класс или курс</label><input id="profile-grade" maxlength="30" value="\${escapeHTML(profile.grade)}"></div>
+      <div class="form-group"><label for="profile-school">Школа / учебное заведение</label><input id="profile-school" maxlength="160" value="\${escapeHTML(profile.school)}"></div>
+      <div class="form-group"><label for="profile-city">Город</label><input id="profile-city" maxlength="100" value="\${escapeHTML(profile.city)}"></div>
+      <div class="form-group"><label for="profile-interests">Интересующие направления</label><textarea id="profile-interests" maxlength="500">\${escapeHTML(profile.interests)}</textarea></div>
+      <div class="form-group"><label for="profile-skills">Навыки и дисциплины</label><textarea id="profile-skills" maxlength="500">\${escapeHTML(profile.skills)}</textarea></div>
+      <button class="primary-button" id="profile-save">Сохранить анкету и грамоты</button>
     </div>
     <div class="form-card">
       <h2>Добавить проект</h2>
       <div class="form-group"><label for="project-title">Название проекта</label><input id="project-title" maxlength="100"></div>
-      <div class="form-group"><label for="project-description">Описание</label><textarea id="project-description" maxlength="1500"></textarea></div>
-      <button class="primary-button" id="project-add">Добавить проект</button>
-      <div id="project-list"></div>
+      <div class="form-group"><label for="project-description">Описание и личный вклад</label><textarea id="project-description" maxlength="1500"></textarea></div>
+      <button class="primary-button" id="project-add">Добавить проект</button><div id="project-list"></div>
     </div>
     <div class="form-card">
-      <h2>Достижения</h2>
-      <div class="inline-form">
-        <input id="achievement-input" maxlength="150" placeholder="Название достижения">
-        <button class="primary-button" id="achievement-add">Добавить</button>
+      <h2>Олимпиады, конкурсы и грамоты</h2>
+      <div class="form-group"><label for="achievement-title">Название олимпиады или конкурса</label><input id="achievement-title" maxlength="160" placeholder="Можно ввести своё название"></div>
+      <div class="form-group"><label for="achievement-subject">Предмет / направление</label><select id="achievement-subject">
+        <option>Математика</option><option>Физика</option><option>Информатика</option><option>Химия</option><option>Биология</option><option>Русский язык</option><option>Иностранный язык</option><option>История</option><option>Обществознание</option><option>Инженерия и технологии</option><option>Другое</option></select></div>
+      <div class="form-group"><label for="achievement-grade">Класс участия</label><select id="achievement-grade">\${Array.from({length:11},(_,i)=>\`<option>\${i+1} класс</option>\`).join("")}</select></div>
+      <div class="form-group"><label for="achievement-stage">Этап</label><select id="achievement-stage"><option>Школьный</option><option>Муниципальный</option><option>Региональный</option><option>Заключительный</option><option>Отборочный</option><option>Другой</option></select></div>
+      <div class="form-group"><label for="achievement-result">Результат</label><select id="achievement-result"><option>Участник</option><option>Призёр</option><option>Победитель</option><option>Дипломант</option><option>Другое</option></select></div>
+      <div class="form-group"><label for="achievement-year">Год участия</label><input id="achievement-year" maxlength="4" inputmode="numeric" placeholder="Например: 2026"></div>
+      <div class="form-group"><label for="achievement-photo">Фото грамоты или диплома</label><input id="achievement-photo" type="file" accept="image/*"><span class="muted small">Изображение будет уменьшено перед сохранением. Храни также оригинал отдельно.</span></div>
+      <button class="primary-button" id="achievement-add">Сохранить достижение</button><div id="achievement-list"></div>
+    </div>
+    <div class="form-card">
+      <h2>Экспорт портфолио</h2>
+      <p class="muted small">Word — редактируемый документ. PDF — откроется окно печати, где можно выбрать «Сохранить как PDF». TXT — простой читаемый текст. JSON оставлен только для резервной копии и восстановления.</p>
+      <div class="export-actions">
+        <button class="primary-button" id="portfolio-word">Открыть официальный бланк (Word)</button>
+        <button class="secondary-button" id="portfolio-pdf">Открыть бланк для PDF / печати</button>
+        <button class="secondary-button" id="portfolio-text">Скачать текст портфолио (TXT)</button>
+        <button class="secondary-button" id="export-data">Скачать техническую резервную копию (JSON)</button>
       </div>
-      <div id="achievement-list"></div>
-    </div>
-    <div class="form-card">
-      <h2>Экспорт данных</h2>
-      <p class="muted small">Резервная копия включает профиль, тест, проекты, достижения и маршрут. Файл хранится на твоём устройстве.</p>
-      <button class="secondary-button" id="export-data">Скачать резервную копию</button>
       <button class="danger-button" id="clear-data">Удалить все данные на этом устройстве</button>
     </div>
-    <p class="notice">Важно: сейчас данные сохраняются только в этом браузере. Они не синхронизируются с другими устройствами и не отправляются на сервер.</p>
-  </section>`;
-
+    <p class="notice">Данные сохраняются в этом браузере на текущем устройстве. Они не отправляются на сервер и не синхронизируются. Если очистить данные сайта, локальная копия может быть потеряна — регулярно скачивай резервный файл.</p>
+  </section>\`;
   document.getElementById("profile-save").addEventListener("click", () => {
-    data.profile.name = document.getElementById("profile-name").value.trim();
-    data.profile.grade = document.getElementById("profile-grade").value.trim();
-    saveData();
-    alert("Профиль сохранён.");
+    data.profile = {
+      name: document.getElementById("profile-name").value.trim(),
+      grade: document.getElementById("profile-grade").value.trim(),
+      school: document.getElementById("profile-school").value.trim(),
+      city: document.getElementById("profile-city").value.trim(),
+      interests: document.getElementById("profile-interests").value.trim(),
+      skills: document.getElementById("profile-skills").value.trim()
+    };
+    if (saveData()) alert("Анкета сохранена.");
   });
-
   document.getElementById("project-add").addEventListener("click", () => {
     const title = document.getElementById("project-title").value.trim();
     const description = document.getElementById("project-description").value.trim();
-
     if (!title) return alert("Укажи название проекта.");
-
     data.projects.push({ id: createId(), title, description });
-    saveData();
-    drawProjects();
-
-    document.getElementById("project-title").value = "";
-    document.getElementById("project-description").value = "";
+    if (!saveData()) { data.projects.pop(); return; }
+    drawProjects(); document.getElementById("project-title").value = ""; document.getElementById("project-description").value = "";
   });
-
-  document.getElementById("achievement-add").addEventListener("click", () => {
-    const input = document.getElementById("achievement-input");
-    const title = input.value.trim();
-    if (!title) return;
-
-    data.achievements.push({ id: createId(), title });
-    saveData();
-    input.value = "";
+  document.getElementById("achievement-add").addEventListener("click", async () => {
+    const title = document.getElementById("achievement-title").value.trim();
+    if (!title) return alert("Укажи название олимпиады или конкурса.");
+    const file = document.getElementById("achievement-photo").files[0];
+    let photo = "";
+    if (file) {
+      if (!file.type.startsWith("image/")) return alert("Выбери файл изображения.");
+      if (file.size > 8 * 1024 * 1024) return alert("Файл слишком большой. Выбери изображение до 8 МБ.");
+      try { photo = await compressCertificateImage(file); }
+      catch { return alert("Не удалось обработать изображение. Попробуй другой файл."); }
+    }
+    const year = document.getElementById("achievement-year").value.trim();
+    if (year && !/^(19|20)\d{2}$/.test(year)) return alert("Укажи год в формате 2026.");
+    const item = {
+      id: createId(), title,
+      subject: document.getElementById("achievement-subject").value,
+      grade: document.getElementById("achievement-grade").value,
+      stage: document.getElementById("achievement-stage").value,
+      result: document.getElementById("achievement-result").value,
+      year, photo
+    };
+    data.achievements.push(item);
+    if (!saveData()) { data.achievements.pop(); return; }
+    ["achievement-title","achievement-year","achievement-photo"].forEach(id => document.getElementById(id).value = "");
     drawAchievements();
   });
-
+  document.getElementById("portfolio-word").addEventListener("click", exportPortfolioWord);
+  document.getElementById("portfolio-pdf").addEventListener("click", printPortfolio);
+  document.getElementById("portfolio-text").addEventListener("click", exportPortfolioText);
   document.getElementById("export-data").addEventListener("click", exportData);
-
   document.getElementById("clear-data").addEventListener("click", () => {
-    if (!confirm("Точно удалить все данные портфолио и маршрута на этом устройстве?")) return;
-
+    if (!confirm("Точно удалить все данные портфолио, маршрута, обучения и возможностей на этом устройстве? Сначала скачай резервную копию.")) return;
     data = JSON.parse(JSON.stringify(defaultData));
-    try {
-      localStorage.removeItem("navigator_universities_v1");
-    } catch {}
-    saveData();
-    renderPortfolio();
+    ["navigator_universities_v1","navigator_education_v1","navigator_opportunities_v1"].forEach(key => { try { localStorage.removeItem(key); } catch {} });
+    saveData(); renderPortfolio();
   });
+  drawProjects(); drawAchievements();
+}
 
-  drawProjects();
-  drawAchievements();
+function compressCertificateImage(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = reject;
+    reader.onload = () => {
+      const image = new Image();
+      image.onerror = reject;
+      image.onload = () => {
+        const scale = Math.min(1, 1400 / Math.max(image.width, image.height));
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.max(1, Math.round(image.width * scale));
+        canvas.height = Math.max(1, Math.round(image.height * scale));
+        const context = canvas.getContext("2d");
+        if (!context) return reject(new Error("Canvas unavailable"));
+        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        const result = canvas.toDataURL("image/jpeg", 0.72);
+        if (result.length > 900000) return reject(new Error("Image too large after compression"));
+        resolve(result);
+      };
+      image.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function getAchievementDetails(item) {
+  return {
+    title: item.title || "Достижение",
+    subject: item.subject || "Не указан",
+    grade: item.grade || "Не указан",
+    stage: item.stage || "Не указан",
+    result: item.result || "Не указан",
+    year: item.year || ""
+  };
+}
+
+function buildPortfolioHTML() {
+  const p = data.profile || {};
+  const achievements = data.achievements.map(item => {
+    const x = getAchievementDetails(item);
+    return \`<article class="achievement"><h3>\${escapeHTML(x.title)}</h3><p>\${escapeHTML([x.subject,x.grade,x.stage,x.result,x.year].filter(Boolean).join(" · "))}</p>\${item.photo ? \`<img class="certificate" src="\${item.photo}" alt="Фото грамоты: \${escapeHTML(x.title)}">\` : ""}</article>\`;
+  }).join("");
+  const projects = data.projects.map(x => \`<article><h3>\${escapeHTML(x.title)}</h3><p>\${escapeHTML(x.description || "")}</p></article>\`).join("");
+  return \`<!doctype html><html lang="ru"><head><meta charset="utf-8"><title>Портфолио</title><style>
+    body{font:14px Arial,sans-serif;color:#111;max-width:850px;margin:35px auto;line-height:1.5}
+    h1{font-size:26px;border-bottom:2px solid #333;padding-bottom:10px}h2{font-size:19px;margin-top:28px;border-bottom:1px solid #aaa;padding-bottom:5px}
+    h3{font-size:15px;margin-bottom:4px}.muted{color:#555}.achievement,article{break-inside:avoid;margin:12px 0;padding:10px;border:1px solid #ddd}
+    .certificate{display:block;max-width:100%;max-height:650px;object-fit:contain;margin:10px auto}
+    @media print{body{margin:12mm;max-width:none}.certificate{max-height:230mm}}
+  </style></head><body><h1>Портфолио ученика</h1>
+    <p><strong>ФИО:</strong> \${escapeHTML(p.name || "Не заполнено")}</p><p><strong>Класс:</strong> \${escapeHTML(p.grade || "Не заполнено")}</p>
+    <p><strong>Школа:</strong> \${escapeHTML(p.school || "Не заполнено")}</p><p><strong>Город:</strong> \${escapeHTML(p.city || "Не заполнено")}</p>
+    <p><strong>Интересы:</strong> \${escapeHTML(p.interests || "Не указаны")}</p><p><strong>Навыки:</strong> \${escapeHTML(p.skills || "Не указаны")}</p>
+    <h2>Проекты</h2>\${projects || "<p>Проекты не добавлены.</p>"}
+    <h2>Олимпиады, конкурсы и достижения</h2>\${achievements || "<p>Достижения не добавлены.</p>"}
+    <p class="muted">Сформировано в «Навигаторе будущего» · \${new Date().toLocaleDateString("ru-RU")}</p></body></html>\`;
+}
+
+function downloadBlob(content, type, filename) {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url; link.download = filename; link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1500);
+}
+
+function exportPortfolioWord() {
+  downloadBlob("\\ufeff" + buildPortfolioHTML(), "application/msword;charset=utf-8", "portfolio-navigator-future.doc");
+}
+
+function printPortfolio() {
+  const popup = window.open("", "_blank");
+  if (!popup) return alert("Браузер заблокировал новое окно. Разреши всплывающие окна для печати портфолио.");
+  popup.document.open(); popup.document.write(buildPortfolioHTML()); popup.document.close();
+  popup.addEventListener("load", () => popup.print());
+  setTimeout(() => { try { popup.print(); } catch {} }, 700);
+}
+
+function exportPortfolioText() {
+  const p = data.profile || {};
+  const lines = ["ПОРТФОЛИО УЧЕНИКА", "", \`ФИО: \${p.name || "Не заполнено"}\`, \`Класс: \${p.grade || "Не заполнено"}\`, \`Школа: \${p.school || "Не заполнено"}\`, \`Город: \${p.city || "Не заполнено"}\`, \`Интересы: \${p.interests || "Не указаны"}\`, \`Навыки: \${p.skills || "Не указаны"}\`, "", "ПРОЕКТЫ"];
+  data.projects.forEach((x,i) => lines.push(\`\${i+1}. \${x.title}\`, x.description || ""));
+  lines.push("", "ОЛИМПИАДЫ, КОНКУРСЫ И ДОСТИЖЕНИЯ");
+  data.achievements.forEach((item,i) => { const x=getAchievementDetails(item); lines.push(\`\${i+1}. \${x.title}\`, [x.subject,x.grade,x.stage,x.result,x.year].filter(Boolean).join(" · ")); });
+  downloadBlob("\\ufeff" + lines.join("\\n"), "text/plain;charset=utf-8", "portfolio-navigator-future.txt");
 }
 
 function drawProjects() {
@@ -540,12 +649,15 @@ function drawProjects() {
 function drawAchievements() {
   const list = document.getElementById("achievement-list");
   if (!list) return;
-
-  list.innerHTML = data.achievements.length ? data.achievements.map(item => `
-    <div class="list-row">
-      <span>${escapeHTML(item.title)}</span>
-      <button class="danger-button" data-achievement-delete="${item.id}">Удалить</button>
-    </div>`).join("") : `<p class="empty-state">Достижений пока нет.</p>`;
+  list.innerHTML = data.achievements.length ? data.achievements.map(item => {
+    const x = getAchievementDetails(item);
+    return `<article class="content-card">
+      <h3>${escapeHTML(x.title)}</h3>
+      <p>${escapeHTML([x.subject,x.grade,x.stage,x.result,x.year].filter(Boolean).join(" · "))}</p>
+      ${item.photo ? `<img class="certificate-preview" src="${item.photo}" alt="Фото грамоты">` : '<p class="muted small">Фото грамоты не приложено.</p>'}
+      <button class="danger-button" data-achievement-delete="${escapeHTML(item.id || "")}">Удалить</button>
+    </article>`;
+  }).join("") : `<p class="empty-state">Достижений пока нет.</p>`;
 }
 
 function renderOpportunities() {
@@ -640,7 +752,9 @@ function exportData() {
     version: 1,
     exportedAt: new Date().toISOString(),
     portfolio: data,
-    universities: readStorage("navigator_universities_v1", [])
+    universities: readStorage("navigator_universities_v1", []),
+    education: readStorage("navigator_education_v1", []),
+    opportunities: readStorage("navigator_opportunities_v1", [])
   };
   const blob = new Blob([JSON.stringify(backup, null, 2)], {
     type: "application/json"
