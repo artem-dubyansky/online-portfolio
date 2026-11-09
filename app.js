@@ -555,15 +555,15 @@ function compressCertificateImage(file) {
       const image = new Image();
       image.onerror = reject;
       image.onload = () => {
-        const scale = Math.min(1, 1400 / Math.max(image.width, image.height));
+        const scale = Math.min(1, 1200 / Math.max(image.width, image.height));
         const canvas = document.createElement("canvas");
         canvas.width = Math.max(1, Math.round(image.width * scale));
         canvas.height = Math.max(1, Math.round(image.height * scale));
         const context = canvas.getContext("2d");
         if (!context) return reject(new Error("Canvas unavailable"));
         context.drawImage(image, 0, 0, canvas.width, canvas.height);
-        const result = canvas.toDataURL("image/jpeg", 0.72);
-        if (result.length > 900000) return reject(new Error("Image too large after compression"));
+        const result = canvas.toDataURL("image/jpeg", 0.65);
+        if (result.length > 420000) return reject(new Error("Image too large after compression"));
         resolve(result);
       };
       image.src = reader.result;
@@ -620,9 +620,8 @@ function exportPortfolioWord() {
 function printPortfolio() {
   const popup = window.open("", "_blank");
   if (!popup) return alert("Браузер заблокировал новое окно. Разреши всплывающие окна для печати портфолио.");
+  popup.onload = () => popup.print();
   popup.document.open(); popup.document.write(buildPortfolioHTML()); popup.document.close();
-  popup.addEventListener("load", () => popup.print());
-  setTimeout(() => { try { popup.print(); } catch {} }, 700);
 }
 
 function exportPortfolioText() {
