@@ -369,6 +369,13 @@ function renderEducation() {
       <div class="form-group"><label for="edu-source">Официальная страница</label><input id="edu-source" type="url" maxlength="500" placeholder="https://..."></div>
       <button class="primary-button" id="edu-add">Сохранить программу</button>
     </div>
+    <div class="form-card"><h2>Подбор курсов по предмету или направлению</h2>
+      <div class="form-group"><label for="edu-filter">Что выбрал ученик?</label><select id="edu-filter">
+        <option value="all">Все направления</option><option value="math">Математика</option><option value="physics">Физика</option>
+        <option value="informatics">Информатика и программирование</option><option value="biology">Биология</option><option value="chemistry">Химия</option>
+        <option value="engineering">Инженерия и робототехника</option><option value="science">Наука</option><option value="business">Бизнес и экономика</option>
+        <option value="design">Дизайн</option><option value="languages">Иностранные языки</option></select></div>
+      <div id="education-recommendations" aria-live="polite"></div></div>
     <div class="form-card"><h2>Мой список обучения</h2><div id="education-list"></div></div>
     <div class="card-grid">
       <article class="content-card"><h3>Школьное обучение</h3><p>Профильные классы, предметы и углублённая подготовка.</p></article>
@@ -377,6 +384,25 @@ function renderEducation() {
       <article class="content-card"><h3>Образовательные программы</h3><p>Летние школы, интенсивы и профильные смены.</p></article>
     </div></section>`;
   const draw = () => {
+    const selected = document.getElementById("edu-filter").value;
+    const termsBySubject = {
+      math: ["математ", "алгебр", "геометр", "math"], physics: ["физик", "механик", "physics"],
+      informatics: ["информат", "программ", "python", "c++", "javascript", "it"],
+      biology: ["биолог", "биотех", "генет", "biology"], chemistry: ["хими", "chemistry"],
+      engineering: ["инженер", "робот", "конструкт", "техник", "моделир"],
+      science: ["наук", "исследован", "лаборатор", "science"],
+      business: ["бизнес", "эконом", "предприним", "финанс", "управлен"],
+      design: ["дизайн", "график", "интерфейс", "ux", "ui"],
+      languages: ["англий", "иностран", "язык", "english"]
+    };
+    const terms = termsBySubject[selected] || [];
+    const recommendations = document.getElementById("education-recommendations");
+    const matching = items.filter(item => selected === "all" || terms.some(term =>
+      [item.title, item.direction, item.organizer, item.conditions].join(" ").toLowerCase().includes(term)
+    ));
+    recommendations.innerHTML = matching.length
+      ? matching.map(item => `<article class="content-card"><h3>${escapeHTML(item.title)}</h3><p><strong>Организатор:</strong> ${escapeHTML(item.organizer || "Не указан")}</p><p><strong>Направление:</strong> ${escapeHTML(item.direction || "Не указано")} · <strong>Сроки:</strong> ${escapeHTML(item.dates || "Не указаны")}</p><p><strong>Возраст/класс:</strong> ${escapeHTML(item.age || "Не указано")} · <strong>Стоимость:</strong> ${escapeHTML(item.cost || "Не указана")}</p><a href="${escapeHTML(item.source)}" target="_blank" rel="noopener noreferrer">Официальная страница</a></article>`).join("")
+      : `<p class="empty-state">${items.length ? "В каталоге пока нет курсов по этому выбору." : "Проверенных курсов пока нет. После добавления они будут автоматически подбираться по предмету или направлению."}</p>`;
     const list = document.getElementById("education-list");
     if (!list) return;
     list.innerHTML = items.length ? items.map((item, i) => `<article class="content-card">
@@ -388,6 +414,7 @@ function renderEducation() {
       <a href="${escapeHTML(item.source)}" target="_blank" rel="noopener noreferrer">Официальная страница</a>
       <button class="danger-button" data-edu-delete="${i}">Удалить из списка</button></article>`).join("") : '<p class="empty-state">Пока ничего не добавлено. Сохраняй проверенные курсы и программы.</p>';
   };
+  document.getElementById("edu-filter").addEventListener("change", draw);
   document.getElementById("edu-add").addEventListener("click", () => {
     const get = id => document.getElementById(id).value.trim();
     const title = get("edu-title"), organizer = get("edu-organizer"), source = get("edu-source");
