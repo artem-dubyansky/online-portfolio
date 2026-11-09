@@ -295,13 +295,37 @@ function renderProfessions() {
 
 function drawProfessions(items) {
   const list = document.getElementById("profession-list");
-  list.innerHTML = items.length ? items.map(item => `
-    <article class="content-card">
+  if (!list) return;
+
+  list.innerHTML = items.length ? items.map(item => {
+    const index = professions.indexOf(item);
+    return `
+      <button type="button" class="content-card profession-card" data-profession-open="${index}" aria-label="Подробнее о профессии: ${escapeHTML(item.name)}">
+        <span class="tag">${escapeHTML(item.field)}</span>
+        <h3>${escapeHTML(item.name)}</h3>
+        <p>${escapeHTML(item.description)}</p>
+        <p class="small"><strong>Полезные навыки:</strong> ${escapeHTML(item.skills)}</p>
+        <span class="profession-hint">Нажми, чтобы узнать подробнее →</span>
+      </button>`;
+  }).join("") : `<p class="empty-state">Ничего не найдено.</p>`;
+}
+
+function drawProfessionDetails(index) {
+  const item = professions[index];
+  const list = document.getElementById("profession-list");
+  if (!item || !list) return;
+
+  list.innerHTML = `
+    <article class="form-card profession-details">
       <span class="tag">${escapeHTML(item.field)}</span>
-      <h3>${escapeHTML(item.name)}</h3>
+      <h2>${escapeHTML(item.name)}</h2>
       <p>${escapeHTML(item.description)}</p>
-      <p class="small"><strong>Полезные навыки:</strong> ${escapeHTML(item.skills)}</p>
-    </article>`).join("") : `<p class="empty-state">Ничего не найдено.</p>`;
+      <h3>Какие навыки пригодятся</h3>
+      <p>${escapeHTML(item.skills)}</p>
+      <p class="muted">Чтобы лучше понять эту профессию, изучи реальные задачи специалистов, попробуй учебный проект и оцени, насколько тебе интересна такая деятельность.</p>
+      <button type="button" class="secondary-button" data-profession-back>← Назад к профессиям</button>
+      <button type="button" class="primary-button" data-add-route="${escapeHTML(item.name)}">Добавить знакомство с профессией в мой маршрут</button>
+    </article>`;
 }
 
 const practiceTasks = [
@@ -614,6 +638,21 @@ document.addEventListener("click", event => {
   if (pageButton) {
     event.preventDefault();
     navigate(pageButton.dataset.page);
+    return;
+  }
+
+  const professionOpen = event.target.closest("[data-profession-open]");
+  if (professionOpen) {
+    drawProfessionDetails(Number(professionOpen.dataset.professionOpen));
+    return;
+  }
+
+  const professionBack = event.target.closest("[data-profession-back]");
+  if (professionBack) {
+    const query = (document.getElementById("profession-search")?.value || "").toLowerCase();
+    drawProfessions(professions.filter(item =>
+      `${item.name} ${item.field} ${item.description}`.toLowerCase().includes(query)
+    ));
     return;
   }
 
