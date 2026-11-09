@@ -351,14 +351,54 @@ function renderPractice() {
 }
 
 function renderEducation() {
-  app.innerHTML = `<section class="page">${pageHeader("education")}
-    <div class="notice">Актуальные курсы и программы нужно добавлять после проверки организатора, даты и условий участия.</div>
-    <div class="card-grid">
-      <article class="content-card"><h3>Школьная подготовка</h3><p>Определи предметы, которые важны для выбранного направления.</p></article>
-      <article class="content-card"><h3>Дополнительное обучение</h3><p>Собирай курсы, кружки и образовательные программы.</p></article>
-      <article class="content-card"><h3>Самостоятельное развитие</h3><p>Составляй список навыков и материалов для изучения.</p></article>
+  const key = "navigator_education_v1";
+  let items = readStorage(key, []);
+  if (!Array.isArray(items)) items = [];
+  const kinds = ["Курс", "Кружок", "Образовательная программа", "Летняя школа", "Самостоятельное обучение"];
+  app.innerHTML = \`<section class="page">\${pageHeader("education")}
+    <div class="notice">Добавляй только те программы, у которых ты проверил организатора, сроки и условия на официальной странице. Платформа пока не подключена к автоматическому каталогу.</div>
+    <div class="form-card"><h2>Добавить обучение</h2>
+      <div class="form-group"><label for="edu-title">Название</label><input id="edu-title" maxlength="140" placeholder="Название курса или программы"></div>
+      <div class="form-group"><label for="edu-kind">Тип</label><select id="edu-kind">\${kinds.map(x => \`<option>\${x}</option>\`).join("")}</select></div>
+      <div class="form-group"><label for="edu-organizer">Организатор</label><input id="edu-organizer" maxlength="120" placeholder="Школа, университет, образовательная платформа"></div>
+      <div class="form-group"><label for="edu-direction">Направление</label><input id="edu-direction" maxlength="100" placeholder="Например: инженерия, программирование"></div>
+      <div class="form-group"><label for="edu-age">Возраст или класс</label><input id="edu-age" maxlength="80" placeholder="Например: 8–11 класс"></div>
+      <div class="form-group"><label for="edu-dates">Сроки проведения</label><input id="edu-dates" maxlength="100" placeholder="Даты или период"></div>
+      <div class="form-group"><label for="edu-cost">Стоимость</label><input id="edu-cost" maxlength="80" placeholder="Бесплатно / стоимость / не указана"></div>
+      <div class="form-group"><label for="edu-conditions">Условия участия</label><textarea id="edu-conditions" maxlength="700" placeholder="Отбор, регистрация, необходимые знания"></textarea></div>
+      <div class="form-group"><label for="edu-source">Официальная страница</label><input id="edu-source" type="url" maxlength="500" placeholder="https://..."></div>
+      <button class="primary-button" id="edu-add">Сохранить программу</button>
     </div>
-  </section>`;
+    <div class="form-card"><h2>Мой список обучения</h2><div id="education-list"></div></div>
+    <div class="card-grid">
+      <article class="content-card"><h3>Школьное обучение</h3><p>Профильные классы, предметы и углублённая подготовка.</p></article>
+      <article class="content-card"><h3>Дополнительное образование</h3><p>Курсы, кружки, образовательные центры и онлайн-программы.</p></article>
+      <article class="content-card"><h3>Самостоятельное развитие</h3><p>Учебные материалы, видеоуроки и индивидуальные планы.</p></article>
+      <article class="content-card"><h3>Образовательные программы</h3><p>Летние школы, интенсивы и профильные смены.</p></article>
+    </div></section>\`;
+  const draw = () => {
+    const list = document.getElementById("education-list");
+    if (!list) return;
+    list.innerHTML = items.length ? items.map((item, i) => \`<article class="content-card">
+      <div class="list-row"><h3>\${escapeHTML(item.title)}</h3><span class="tag">\${escapeHTML(item.kind)}</span></div>
+      <p><strong>Организатор:</strong> \${escapeHTML(item.organizer || "Не указан")}</p>
+      <p><strong>Направление:</strong> \${escapeHTML(item.direction || "Не указано")}</p>
+      <p><strong>Возраст/класс:</strong> \${escapeHTML(item.age || "Не указано")} · <strong>Сроки:</strong> \${escapeHTML(item.dates || "Не указаны")}</p>
+      <p><strong>Стоимость:</strong> \${escapeHTML(item.cost || "Не указана")}</p><p>\${escapeHTML(item.conditions || "")}</p>
+      <a href="\${escapeHTML(item.source)}" target="_blank" rel="noopener noreferrer">Официальная страница</a>
+      <button class="danger-button" data-edu-delete="\${i}">Удалить из списка</button></article>\`).join("") : '<p class="empty-state">Пока ничего не добавлено. Сохраняй проверенные курсы и программы.</p>';
+  };
+  document.getElementById("edu-add").addEventListener("click", () => {
+    const get = id => document.getElementById(id).value.trim();
+    const title = get("edu-title"), organizer = get("edu-organizer"), source = get("edu-source");
+    let parsed; try { parsed = new URL(source); } catch { return alert("Укажи корректную ссылку на официальную страницу."); }
+    if (!title || !organizer || !["https:", "http:"].includes(parsed.protocol)) return alert("Заполни название, организатора и официальную ссылку.");
+    items.push({ id: createId(), title, kind: get("edu-kind"), organizer, direction: get("edu-direction"), age: get("edu-age"), dates: get("edu-dates"), cost: get("edu-cost"), conditions: get("edu-conditions"), source, addedAt: new Date().toISOString() });
+    try { localStorage.setItem(key, JSON.stringify(items)); } catch { items.pop(); return alert("Не удалось сохранить запись. Возможно, закончилось место в браузере."); }
+    ["edu-title","edu-organizer","edu-direction","edu-age","edu-dates","edu-cost","edu-conditions","edu-source"].forEach(id => document.getElementById(id).value = "");
+    draw();
+  });
+  draw();
 }
 
 function renderRoute() {
@@ -509,61 +549,90 @@ function drawAchievements() {
 }
 
 function renderOpportunities() {
-  app.innerHTML = `<section class="page">${pageHeader("opportunities")}
-    <div class="notice">Здесь пока нет подключённого каталога актуальных мероприятий. Информацию нужно проверять по официальным источникам.</div>
-    <div class="card-grid">
-      <article class="content-card"><h3>Олимпиады</h3><p>Каталог олимпиад с организаторами, годом и сроками.</p></article>
-      <article class="content-card"><h3>Конкурсы проектов</h3><p>Каталог исследовательских и инженерных конкурсов.</p></article>
-      <article class="content-card"><h3>Мероприятия</h3><p>Выставки, экскурсии, лекции и мастер-классы.</p></article>
-    </div>
-  </section>`;
+  const key = "navigator_opportunities_v1";
+  let items = readStorage(key, []);
+  if (!Array.isArray(items)) items = [];
+  const categories = ["Олимпиада", "Конкурс", "Хакатон", "Мероприятие", "Летняя программа"];
+  app.innerHTML = \`<section class="page">\${pageHeader("opportunities")}
+    <div class="notice">Это личный каталог возможностей. Непроверенные события не показываются как актуальные: добавляй запись после проверки организатора, дат, дедлайна и правил на официальном сайте.</div>
+    <div class="form-card"><h2>Добавить возможность</h2>
+      <div class="form-group"><label for="opp-title">Название</label><input id="opp-title" maxlength="140"></div>
+      <div class="form-group"><label for="opp-category">Категория</label><select id="opp-category">\${categories.map(x => \`<option>\${x}</option>\`).join("")}</select></div>
+      <div class="form-group"><label for="opp-organizer">Организатор</label><input id="opp-organizer" maxlength="140"></div>
+      <div class="form-group"><label for="opp-direction">Направление</label><input id="opp-direction" maxlength="100" placeholder="Инженерия, IT, наука..."></div>
+      <div class="form-group"><label for="opp-age">Возраст или класс</label><input id="opp-age" maxlength="80"></div>
+      <div class="form-group"><label for="opp-dates">Даты проведения</label><input id="opp-dates" maxlength="100"></div>
+      <div class="form-group"><label for="opp-deadline">Дедлайн регистрации</label><input id="opp-deadline" maxlength="100"></div>
+      <div class="form-group"><label for="opp-format">Формат и стоимость</label><input id="opp-format" maxlength="120" placeholder="Онлайн / очно, бесплатно / платно"></div>
+      <div class="form-group"><label for="opp-source">Официальная страница</label><input id="opp-source" type="url" maxlength="500" placeholder="https://..."></div>
+      <button class="primary-button" id="opp-add">Добавить в каталог</button></div>
+    <div class="form-card"><h2>Каталог</h2><input class="search-input" id="opp-search" placeholder="Поиск по названию, организатору или направлению"><div id="opportunity-list"></div></div>
+  </section>\`;
+  const draw = () => {
+    const list = document.getElementById("opportunity-list"); if (!list) return;
+    const q = (document.getElementById("opp-search")?.value || "").toLowerCase();
+    const filtered = items.filter(x => \`\${x.title} \${x.organizer} \${x.direction} \${x.category}\`.toLowerCase().includes(q));
+    list.innerHTML = filtered.length ? filtered.map(item => {
+      const index = items.findIndex(x => x.id === item.id);
+      return \`<article class="content-card"><div class="list-row"><h3>\${escapeHTML(item.title)}</h3><span class="tag">\${escapeHTML(item.category)}</span></div>
+        <p><strong>Организатор:</strong> \${escapeHTML(item.organizer)}</p>
+        <p><strong>Направление:</strong> \${escapeHTML(item.direction || "Не указано")} · <strong>Возраст:</strong> \${escapeHTML(item.age || "Не указано")}</p>
+        <p><strong>Даты:</strong> \${escapeHTML(item.dates || "Не указаны")} · <strong>Дедлайн:</strong> \${escapeHTML(item.deadline || "Не указан")}</p>
+        <p><strong>Формат/стоимость:</strong> \${escapeHTML(item.format || "Не указаны")}</p>
+        <p class="small muted">Добавлено: \${escapeHTML(new Date(item.addedAt).toLocaleDateString("ru-RU"))}. Актуальность перепроверь у организатора.</p>
+        <a href="\${escapeHTML(item.source)}" target="_blank" rel="noopener noreferrer">Официальная страница</a><button class="danger-button" data-opp-delete="\${index}">Удалить</button></article>\`;
+    }).join("") : '<p class="empty-state">Записей нет. Добавь событие после проверки официальных условий.</p>';
+  };
+  document.getElementById("opp-add").addEventListener("click", () => {
+    const get = id => document.getElementById(id).value.trim();
+    const title = get("opp-title"), organizer = get("opp-organizer"), source = get("opp-source");
+    let parsed; try { parsed = new URL(source); } catch { return alert("Добавь ссылку на официальную страницу."); }
+    if (!title || !organizer || !["http:", "https:"].includes(parsed.protocol)) return alert("Нужны название, организатор и официальная ссылка.");
+    items.push({ id: createId(), title, category: get("opp-category"), organizer, direction: get("opp-direction"), age: get("opp-age"), dates: get("opp-dates"), deadline: get("opp-deadline"), format: get("opp-format"), source, addedAt: new Date().toISOString() });
+    try { localStorage.setItem(key, JSON.stringify(items)); } catch { items.pop(); return alert("Не удалось сохранить запись. Проверь свободное место в браузере."); }
+    ["opp-title","opp-organizer","opp-direction","opp-age","opp-dates","opp-deadline","opp-format","opp-source"].forEach(id => document.getElementById(id).value = "");
+    draw();
+  });
+  document.getElementById("opp-search").addEventListener("input", draw); draw();
 }
 
 function renderAdmission() {
   const key = "navigator_universities_v1";
   let universities = readStorage(key, []);
   if (!Array.isArray(universities)) universities = [];
-
-  app.innerHTML = `<section class="page">${pageHeader("admission")}
-    <div class="notice">Правила приёма, экзамены и проходные баллы необходимо проверять на официальном сайте каждого учебного заведения.</div>
-    <div class="form-card">
-      <h2>Мои интересующие учебные заведения</h2>
-      <div class="inline-form">
-        <input id="university-input" maxlength="150" placeholder="Название учебного заведения">
-        <button class="primary-button" id="university-add">Добавить</button>
-      </div>
-      <div id="university-list"></div>
-    </div>
-  </section>`;
-
+  universities = universities.map(item => typeof item === "string" ? { id: createId(), name: item, city: "", country: "", direction: "", level: "Не указан", exams: "", deadline: "", source: "", status: "Интересует" } : item);
+  app.innerHTML = \`<section class="page">\${pageHeader("admission")}
+    <div class="notice">Требования, экзамены, сроки и проходные баллы меняются. Вноси их только после проверки официального сайта учебного заведения и указывай год приёма.</div>
+    <div class="form-card"><h2>Добавить учебное заведение</h2>
+      <div class="form-group"><label for="uni-name">Название</label><input id="uni-name" maxlength="150" placeholder="Школа, колледж или университет"></div>
+      <div class="form-group"><label for="uni-city">Город и страна</label><input id="uni-city" maxlength="120"></div>
+      <div class="form-group"><label for="uni-direction">Направление или специальность</label><input id="uni-direction" maxlength="140"></div>
+      <div class="form-group"><label for="uni-level">Уровень образования</label><select id="uni-level"><option>Школа</option><option>Колледж</option><option>Бакалавриат</option><option>Специалитет</option><option>Другое</option></select></div>
+      <div class="form-group"><label for="uni-exams">Экзамены и предметы</label><input id="uni-exams" maxlength="180" placeholder="Заполняй после проверки требований"></div>
+      <div class="form-group"><label for="uni-deadline">Сроки подачи и год приёма</label><input id="uni-deadline" maxlength="120" placeholder="Например: приём 2027, сроки уточнить"></div>
+      <div class="form-group"><label for="uni-source">Официальный сайт / страница приёма</label><input id="uni-source" type="url" maxlength="500" placeholder="https://..."></div>
+      <div class="form-group"><label for="uni-status">Статус</label><select id="uni-status"><option>Интересует</option><option>Изучаю</option><option>Планирую поступать</option></select></div>
+      <button class="primary-button" id="university-add">Сохранить учебное заведение</button></div>
+    <div class="form-card"><h2>Мой список</h2><div id="university-list"></div></div></section>\`;
   const list = document.getElementById("university-list");
-
+  function save() { try { localStorage.setItem(key, JSON.stringify(universities)); return true; } catch { alert("Не удалось сохранить список. Проверь свободное место в браузере."); return false; } }
   function draw() {
-    list.innerHTML = universities.length ? universities.map((name, index) => `
-      <div class="list-row">
-        <span>${escapeHTML(name)}</span>
-        <button class="danger-button" data-university-delete="${index}">Удалить</button>
-      </div>`).join("") : `<p class="empty-state">Список пока пуст.</p>`;
+    list.innerHTML = universities.length ? universities.map(item => \`<article class="content-card">
+      <div class="list-row"><h3>\${escapeHTML(item.name)}</h3><span class="tag">\${escapeHTML(item.status || "Интересует")}</span></div>
+      <p>\${escapeHTML([item.city,item.country].filter(Boolean).join(", ") || "Местоположение не указано")}</p>
+      <p><strong>Направление:</strong> \${escapeHTML(item.direction || "Не указано")} · <strong>Уровень:</strong> \${escapeHTML(item.level || "Не указан")}</p>
+      <p><strong>Экзамены:</strong> \${escapeHTML(item.exams || "Не указаны")} · <strong>Сроки:</strong> \${escapeHTML(item.deadline || "Не указаны")}</p>
+      \${item.source ? \`<a href="\${escapeHTML(item.source)}" target="_blank" rel="noopener noreferrer">Официальный сайт</a>\` : '<p class="status-error">Официальный источник ещё не добавлен.</p>'}
+      <button class="danger-button" data-university-delete="\${escapeHTML(item.id)}">Удалить</button></article>\`).join("") : '<p class="empty-state">Список пока пуст. Добавь учебные заведения, которые хочешь изучить.</p>';
   }
-
   document.getElementById("university-add").addEventListener("click", () => {
-    const input = document.getElementById("university-input");
-    const name = input.value.trim();
-    if (!name) return;
-
-    universities.push(name);
-    try {
-      localStorage.setItem(key, JSON.stringify(universities));
-    } catch {
-      universities.pop();
-      alert("Не удалось сохранить список. Проверь настройки хранения браузера.");
-      return;
-    }
-    input.value = "";
-    draw();
-  });
-
-  draw();
+    const get = id => document.getElementById(id).value.trim();
+    const name = get("uni-name"), source = get("uni-source"); if (!name) return alert("Укажи название учебного заведения.");
+    if (source) { try { if (!["http:", "https:"].includes(new URL(source).protocol)) throw Error(); } catch { return alert("Проверь ссылку на официальный сайт."); } }
+    universities.push({ id: createId(), name, city: get("uni-city"), country: "", direction: get("uni-direction"), level: get("uni-level"), exams: get("uni-exams"), deadline: get("uni-deadline"), source, status: get("uni-status") });
+    if (!save()) { universities.pop(); return; }
+    ["uni-name","uni-city","uni-direction","uni-exams","uni-deadline","uni-source"].forEach(id => document.getElementById(id).value = ""); draw();
+  }); draw();
 }
 
 function exportData() {
@@ -583,6 +652,19 @@ function exportData() {
   link.download = "navigator-future-portfolio.json";
   link.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+
+function addSectionStepper() {
+  const order = Object.keys(pages), index = order.indexOf(currentPage);
+  if (index < 0 || document.querySelector(".section-stepper")) return;
+  const previous = index > 0 ? order[index - 1] : "home";
+  const next = index < order.length - 1 ? order[index + 1] : "home";
+  app.insertAdjacentHTML("beforeend", \`<nav class="section-stepper" aria-label="Переход между разделами">
+    <button type="button" data-page="\${previous}" \${index === 0 ? "disabled" : ""}>← Назад</button>
+    <span class="step-caption">Раздел \${index + 1} из \${order.length}<br>\${escapeHTML(pages[currentPage].title)}</span>
+    <button type="button" data-page="\${next}">\${index === order.length - 1 ? "На главную" : "Далее →"}</button>
+  </nav>\`);
 }
 
 function navigate(page) {
@@ -609,6 +691,7 @@ function navigate(page) {
     case "admission": renderAdmission(); break;
   }
 
+  if (currentPage !== "home") addSectionStepper();
   app.focus({ preventScroll: true });
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -703,18 +786,16 @@ document.addEventListener("click", event => {
 
   const universityDelete = event.target.closest("[data-university-delete]");
   if (universityDelete) {
-    const key = "navigator_universities_v1";
-    let universities = readStorage(key, []);
+    const key = "navigator_universities_v1"; let universities = readStorage(key, []);
     if (!Array.isArray(universities)) universities = [];
-    universities.splice(Number(universityDelete.dataset.universityDelete), 1);
-    try {
-      localStorage.setItem(key, JSON.stringify(universities));
-    } catch {
-      alert("Не удалось обновить список в хранилище браузера.");
-      return;
-    }
-    renderAdmission();
+    universities = universities.filter(item => (typeof item === "string" ? item : item.id) !== universityDelete.dataset.universityDelete);
+    try { localStorage.setItem(key, JSON.stringify(universities)); } catch { alert("Не удалось обновить список."); return; }
+    renderAdmission(); return;
   }
+  const educationDelete = event.target.closest("[data-edu-delete]");
+  if (educationDelete) { const key = "navigator_education_v1"; let items = readStorage(key, []); items.splice(Number(educationDelete.dataset.eduDelete), 1); try { localStorage.setItem(key, JSON.stringify(items)); } catch { return alert("Не удалось обновить список."); } renderEducation(); return; }
+  const opportunityDelete = event.target.closest("[data-opp-delete]");
+  if (opportunityDelete) { const key = "navigator_opportunities_v1"; let items = readStorage(key, []); items.splice(Number(opportunityDelete.dataset.oppDelete), 1); try { localStorage.setItem(key, JSON.stringify(items)); } catch { return alert("Не удалось обновить каталог."); } renderOpportunities(); }
 });
 
 document.addEventListener("click", event => {
