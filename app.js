@@ -1,7 +1,7 @@
 
 "use strict";
 
-const STORAGE_KEY = "navigator_future_v1";
+const STORAGE_KEY = "navigator_future_v2";
 
 const defaultData = {
   profile: { name: "", grade: "" },
@@ -15,6 +15,7 @@ function loadData() {
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
     if (!saved || typeof saved !== "object") return structuredClone(defaultData);
+
     return {
       ...structuredClone(defaultData),
       ...saved,
@@ -26,7 +27,6 @@ function loadData() {
 }
 
 let data = loadData();
-let currentPage = "home";
 let quizAnswers = {};
 
 function saveData() {
@@ -35,56 +35,27 @@ function saveData() {
 
 function escapeHTML(value) {
   return String(value ?? "").replace(/[&<>"']/g, char => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#039;"
+    "&": "&amp;", "<": "&lt;", ">": "&gt;",
+    '"': "&quot;", "'": "&#039;"
   })[char]);
 }
 
 const app = document.getElementById("app");
-const navigation = document.getElementById("navigation");
-
 const pages = {
-  orientation: {
-    title: "Профориентация",
-    description: "Ответь на вопросы о своих интересах. Результат покажет направления, которые стоит исследовать."
-  },
-  professions: {
-    title: "Мир профессий",
-    description: "Изучай направления деятельности, задачи специалистов и необходимые навыки."
-  },
-  practice: {
-    title: "Практика и проекты",
-    description: "Проверяй интерес к профессиям с помощью практических заданий."
-  },
-  education: {
-    title: "Образование",
-    description: "Изучай образовательные направления и планируй развитие навыков."
-  },
-  route: {
-    title: "Мой маршрут",
-    description: "Создай личный план и отмечай выполненные шаги."
-  },
-  portfolio: {
-    title: "Портфолио",
-    description: "Собирай проекты, достижения и результаты своей работы."
-  },
-  opportunities: {
-    title: "Возможности",
-    description: "Раздел для поиска олимпиад, конкурсов, мероприятий и образовательных программ."
-  },
-  admission: {
-    title: "Поступление",
-    description: "Подготовь список интересующих учебных заведений и направлений."
-  }
+  orientation: { title: "Профориентация", description: "Ответь на вопросы о своих интересах и узнай, какие направления стоит исследовать." },
+  professions: { title: "Мир профессий", description: "Изучай профессии, задачи специалистов и необходимые навыки." },
+  practice: { title: "Практика и проекты", description: "Проверяй интерес к профессиям с помощью практических заданий." },
+  education: { title: "Образование", description: "Изучай образовательные направления и планируй развитие навыков." },
+  route: { title: "Мой маршрут", description: "Создай личный план и отмечай выполненные шаги." },
+  portfolio: { title: "Портфолио", description: "Собирай проекты, достижения и результаты своей работы." },
+  opportunities: { title: "Возможности", description: "Раздел для поиска олимпиад, конкурсов и мероприятий." },
+  admission: { title: "Поступление", description: "Подготовь список интересующих учебных заведений и направлений." }
 };
 
 const professions = [
   { name: "Инженер-конструктор", field: "Инженерия", description: "Разрабатывает конструкции, механизмы и технические решения.", skills: "Физика, математика, черчение, 3D-моделирование" },
   { name: "Программист", field: "IT", description: "Создаёт программы, сайты и цифровые сервисы.", skills: "Алгоритмы, логика, языки программирования" },
-  { name: "Архитектор", field: "Дизайн и проектирование", description: "Проектирует здания и пространства.", skills: "Черчение, пространственное мышление, дизайн" },
+  { name: "Архитектор", field: "Проектирование", description: "Проектирует здания и пространства.", skills: "Черчение, пространственное мышление, дизайн" },
   { name: "Биотехнолог", field: "Наука", description: "Применяет биологические процессы для решения практических задач.", skills: "Биология, химия, исследовательские навыки" },
   { name: "Врач", field: "Медицина", description: "Занимается диагностикой, профилактикой и лечением заболеваний.", skills: "Биология, химия, коммуникация" },
   { name: "Экономист", field: "Экономика", description: "Анализирует финансовые и экономические процессы.", skills: "Математика, анализ данных, экономика" },
@@ -132,7 +103,7 @@ const quiz = [
       ["Программировать", "it"],
       ["Проводить исследования", "science"],
       ["Руководить командой", "business"],
-      ["Рисовать и проектировать интерфейсы", "design"]
+      ["Создавать дизайн", "design"]
     ]
   },
   {
@@ -165,6 +136,14 @@ const fieldNames = {
   design: "Дизайн и творчество"
 };
 
+function pageHeader(id) {
+  return `<div class="page-header">
+    <span class="eyebrow">НАВИГАТОР БУДУЩЕГО</span>
+    <h1 class="page-title">${pages[id].title}</h1>
+    <p class="page-intro">${pages[id].description}</p>
+  </div>`;
+}
+
 function renderHome() {
   app.innerHTML = `
     <section class="hero">
@@ -191,34 +170,26 @@ function renderHome() {
             <span class="feature-icon">${["◎","◇","⌘","▤","⌁","▣","✳","↗"][index]}</span>
             <strong>${page.title}</strong>
             <span>${page.description}</span>
-          </button>
-        `).join("")}
+          </button>`).join("")}
       </div>
     </section>`;
 }
 
-function pageHeader(id) {
-  const page = pages[id];
-  return `<div class="page-header">
-    <span class="eyebrow">НАВИГАТОР БУДУЩЕГО</span>
-    <h1 class="page-title">${page.title}</h1>
-    <p class="page-intro">${page.description}</p>
-  </div>`;
-}
-
 function renderOrientation() {
   const result = data.testResult;
+
   app.innerHTML = `<section class="page">${pageHeader("orientation")}
     ${result ? `
       <div class="result-box">
-        <span class="eyebrow">ПОСЛЕДНИЙ РЕЗУЛЬТАТ</span>
+        <span class="eyebrow">РЕЗУЛЬТАТ ТЕСТА</span>
         <h2>${escapeHTML(result.name)}</h2>
-        <p>Это предварительная рекомендация по твоим ответам, а не окончательный выбор профессии.</p>
+        <p>Это предварительная рекомендация по твоим ответам, а не окончательный выбор профессии. Изучи направление и попробуй практические задания.</p>
         <button class="secondary-button" id="restart-quiz">Пройти тест заново</button>
-      </div>` : ""}
-    <div id="quiz-container"></div>
+        <button class="primary-button" data-page="professions">Посмотреть профессии</button>
+      </div>` : `<div id="quiz-container"></div>`}
   </section>`;
-  renderQuiz();
+
+  if (!result) renderQuiz();
 }
 
 function renderQuiz() {
@@ -226,23 +197,37 @@ function renderQuiz() {
   if (!container) return;
 
   const index = Object.keys(quizAnswers).length;
+
   if (index >= quiz.length) {
     const scores = {};
-    Object.values(quizAnswers).forEach(field => scores[field] = (scores[field] || 0) + 1);
+    Object.values(quizAnswers).forEach(field => {
+      scores[field] = (scores[field] || 0) + 1;
+    });
+
     const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
     const best = sorted[0][0];
-    const result = { name: fieldNames[best], scores };
-    data.testResult = result;
+
+    data.testResult = {
+      name: fieldNames[best],
+      scores
+    };
+
     saveData();
     renderOrientation();
     return;
   }
 
   const question = quiz[index];
+
   container.innerHTML = `
     <div class="form-card">
-      <div class="list-row"><strong>Вопрос ${index + 1} из ${quiz.length}</strong><span class="muted">${Math.round(index / quiz.length * 100)}%</span></div>
-      <div class="progress-track"><div class="progress-fill" style="width:${index / quiz.length * 100}%"></div></div>
+      <div class="list-row">
+        <strong>Вопрос ${index + 1} из ${quiz.length}</strong>
+        <span class="muted">${Math.round(index / quiz.length * 100)}%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" style="width:${index / quiz.length * 100}%"></div>
+      </div>
       <h2 class="question-title">${question.question}</h2>
       <div class="option-list">
         ${question.options.map(([label, value]) => `
@@ -256,10 +241,12 @@ function renderQuiz() {
 
   document.getElementById("quiz-next").addEventListener("click", () => {
     const selected = container.querySelector('input[name="quiz-answer"]:checked');
+
     if (!selected) {
       alert("Выбери один вариант ответа.");
       return;
     }
+
     quizAnswers[index] = selected.value;
     renderQuiz();
   });
@@ -270,9 +257,12 @@ function renderProfessions() {
     <input class="search-input" id="profession-search" type="search" placeholder="Найти профессию...">
     <div class="card-grid" id="profession-list"></div>
   </section>`;
+
   drawProfessions(professions);
+
   document.getElementById("profession-search").addEventListener("input", event => {
     const query = event.target.value.toLowerCase();
+
     drawProfessions(professions.filter(item =>
       `${item.name} ${item.field} ${item.description}`.toLowerCase().includes(query)
     ));
@@ -295,7 +285,7 @@ const practiceTasks = [
   ["IT", "Продумай идею приложения для школьников. Запиши его основные функции и нарисуй экран."],
   ["Наука", "Сформулируй исследовательский вопрос, гипотезу и план безопасного наблюдения."],
   ["Бизнес", "Придумай полезный продукт. Определи аудиторию, задачу и способ представить идею."],
-  ["Дизайн", "Создай макет интерфейса для приложения и объясни, почему он удобен."]
+  ["Дизайн", "Создай макет интерфейса приложения и объясни, почему он удобен."]
 ];
 
 function renderPractice() {
@@ -314,7 +304,7 @@ function renderPractice() {
 
 function renderEducation() {
   app.innerHTML = `<section class="page">${pageHeader("education")}
-    <div class="notice">Здесь пока размещена структура раздела. Актуальные курсы и программы нужно добавлять после проверки организатора, даты и условий участия.</div>
+    <div class="notice">Актуальные курсы и программы нужно добавлять после проверки организатора, даты и условий участия.</div>
     <div class="card-grid">
       <article class="content-card"><h3>Школьная подготовка</h3><p>Определи предметы, которые важны для выбранного направления.</p></article>
       <article class="content-card"><h3>Дополнительное обучение</h3><p>Собирай курсы, кружки и образовательные программы.</p></article>
@@ -337,11 +327,14 @@ function renderRoute() {
       <div id="route-list"></div>
     </div>
   </section>`;
+
   drawRoute();
+
   document.getElementById("route-add").addEventListener("click", () => {
     const input = document.getElementById("route-input");
     const title = input.value.trim();
     if (!title) return;
+
     data.route.push({ id: crypto.randomUUID(), title, done: false });
     saveData();
     input.value = "";
@@ -352,6 +345,7 @@ function renderRoute() {
 function drawRoute() {
   const list = document.getElementById("route-list");
   if (!list) return;
+
   list.innerHTML = data.route.length ? data.route.map(item => `
     <div class="list-row">
       <label class="check-row">
@@ -387,7 +381,7 @@ function renderPortfolio() {
     </div>
     <div class="form-card">
       <h2>Экспорт данных</h2>
-      <p class="muted small">Скачай резервную копию своего портфолио в формате JSON.</p>
+      <p class="muted small">Скачай резервную копию портфолио в формате JSON.</p>
       <button class="secondary-button" id="export-data">Скачать резервную копию</button>
       <button class="danger-button" id="clear-data">Удалить все данные на этом устройстве</button>
     </div>
@@ -403,10 +397,13 @@ function renderPortfolio() {
   document.getElementById("project-add").addEventListener("click", () => {
     const title = document.getElementById("project-title").value.trim();
     const description = document.getElementById("project-description").value.trim();
+
     if (!title) return alert("Укажи название проекта.");
+
     data.projects.push({ id: crypto.randomUUID(), title, description });
     saveData();
     drawProjects();
+
     document.getElementById("project-title").value = "";
     document.getElementById("project-description").value = "";
   });
@@ -415,6 +412,7 @@ function renderPortfolio() {
     const input = document.getElementById("achievement-input");
     const title = input.value.trim();
     if (!title) return;
+
     data.achievements.push({ id: crypto.randomUUID(), title });
     saveData();
     input.value = "";
@@ -425,6 +423,7 @@ function renderPortfolio() {
 
   document.getElementById("clear-data").addEventListener("click", () => {
     if (!confirm("Точно удалить все данные портфолио и маршрута на этом устройстве?")) return;
+
     data = structuredClone(defaultData);
     saveData();
     renderPortfolio();
@@ -437,6 +436,7 @@ function renderPortfolio() {
 function drawProjects() {
   const list = document.getElementById("project-list");
   if (!list) return;
+
   list.innerHTML = data.projects.length ? data.projects.map(item => `
     <article class="content-card">
       <h3>${escapeHTML(item.title)}</h3>
@@ -448,6 +448,7 @@ function drawProjects() {
 function drawAchievements() {
   const list = document.getElementById("achievement-list");
   if (!list) return;
+
   list.innerHTML = data.achievements.length ? data.achievements.map(item => `
     <div class="list-row">
       <span>${escapeHTML(item.title)}</span>
@@ -457,18 +458,27 @@ function drawAchievements() {
 
 function renderOpportunities() {
   app.innerHTML = `<section class="page">${pageHeader("opportunities")}
-    <div class="notice">Список мероприятий пока не подключён к актуальным источникам. Не считай примеры ниже реальными объявлениями или подтверждёнными датами.</div>
+    <div class="notice">Здесь пока нет подключённого каталога актуальных мероприятий. Информацию нужно проверять по официальным источникам.</div>
     <div class="card-grid">
-      <article class="content-card"><h3>Олимпиады</h3><p>Место для проверенных олимпиад с указанием организатора, года и сроков.</p></article>
-      <article class="content-card"><h3>Конкурсы проектов</h3><p>Место для конкурсов исследовательских и инженерных проектов.</p></article>
-      <article class="content-card"><h3>Мероприятия</h3><p>Место для выставок, экскурсий, лекций и мастер-классов.</p></article>
+      <article class="content-card"><h3>Олимпиады</h3><p>Каталог олимпиад с организаторами, годом и сроками.</p></article>
+      <article class="content-card"><h3>Конкурсы проектов</h3><p>Каталог исследовательских и инженерных конкурсов.</p></article>
+      <article class="content-card"><h3>Мероприятия</h3><p>Выставки, экскурсии, лекции и мастер-классы.</p></article>
     </div>
   </section>`;
 }
 
 function renderAdmission() {
+  const key = "navigator_universities_v1";
+  let universities = [];
+
+  try {
+    universities = JSON.parse(localStorage.getItem(key)) || [];
+  } catch {
+    universities = [];
+  }
+
   app.innerHTML = `<section class="page">${pageHeader("admission")}
-    <div class="notice">Сведения о правилах приёма, экзаменах и проходных баллах необходимо проверять на официальном сайте каждого учебного заведения. Здесь пока нет подтверждённых данных о поступлении.</div>
+    <div class="notice">Правила приёма, экзамены и проходные баллы необходимо проверять на официальном сайте каждого учебного заведения.</div>
     <div class="form-card">
       <h2>Мои интересующие учебные заведения</h2>
       <div class="inline-form">
@@ -479,30 +489,35 @@ function renderAdmission() {
     </div>
   </section>`;
 
-  const key = "navigator_universities_v1";
-  let universities = [];
-  try { universities = JSON.parse(localStorage.getItem(key)) || []; } catch {}
-
   const list = document.getElementById("university-list");
-  const draw = () => {
+
+  function draw() {
     list.innerHTML = universities.length ? universities.map((name, index) => `
-      <div class="list-row"><span>${escapeHTML(name)}</span><button class="danger-button" data-university-delete="${index}">Удалить</button></div>`).join("") : `<p class="empty-state">Список пока пуст.</p>`;
-  };
+      <div class="list-row">
+        <span>${escapeHTML(name)}</span>
+        <button class="danger-button" data-university-delete="${index}">Удалить</button>
+      </div>`).join("") : `<p class="empty-state">Список пока пуст.</p>`;
+  }
 
   document.getElementById("university-add").addEventListener("click", () => {
     const input = document.getElementById("university-input");
     const name = input.value.trim();
     if (!name) return;
+
     universities.push(name);
     localStorage.setItem(key, JSON.stringify(universities));
     input.value = "";
     draw();
   });
+
   draw();
 }
 
 function exportData() {
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  const blob = new Blob([JSON.stringify(data, null, 2)], {
+    type: "application/json"
+  });
+
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
@@ -512,12 +527,15 @@ function exportData() {
 }
 
 function navigate(page) {
-  currentPage = pages[page] || page === "home" ? page : "home";
+  const allowed = page === "home" || Object.hasOwn(pages, page);
+  currentPage = allowed ? page : "home";
+
   document.querySelectorAll(".nav [data-page]").forEach(button => {
     button.classList.toggle("active", button.dataset.page === currentPage);
   });
 
-  document.getElementById("navigation").classList.remove("open");
+  const nav = document.getElementById("navigation");
+  nav.classList.remove("open");
   document.getElementById("menu-toggle").setAttribute("aria-expanded", "false");
 
   switch (currentPage) {
@@ -530,7 +548,6 @@ function navigate(page) {
     case "portfolio": renderPortfolio(); break;
     case "opportunities": renderOpportunities(); break;
     case "admission": renderAdmission(); break;
-    default: renderHome();
   }
 
   app.focus({ preventScroll: true });
@@ -539,6 +556,7 @@ function navigate(page) {
 
 document.addEventListener("click", event => {
   const pageButton = event.target.closest("[data-page]");
+
   if (pageButton) {
     event.preventDefault();
     navigate(pageButton.dataset.page);
@@ -594,17 +612,15 @@ document.addEventListener("click", event => {
   if (universityDelete) {
     const key = "navigator_universities_v1";
     let universities = [];
-    try { universities = JSON.parse(localStorage.getItem(key)) || []; } catch {}
+
+    try {
+      universities = JSON.parse(localStorage.getItem(key)) || [];
+    } catch {}
+
     universities.splice(Number(universityDelete.dataset.universityDelete), 1);
     localStorage.setItem(key, JSON.stringify(universities));
     renderAdmission();
   }
-});
-
-document.getElementById("menu-toggle").addEventListener("click", () => {
-  const nav = document.getElementById("navigation");
-  const isOpen = nav.classList.toggle("open");
-  document.getElementById("menu-toggle").setAttribute("aria-expanded", String(isOpen));
 });
 
 document.addEventListener("click", event => {
@@ -614,6 +630,12 @@ document.addEventListener("click", event => {
     saveData();
     renderOrientation();
   }
+});
+
+document.getElementById("menu-toggle").addEventListener("click", () => {
+  const nav = document.getElementById("navigation");
+  const isOpen = nav.classList.toggle("open");
+  document.getElementById("menu-toggle").setAttribute("aria-expanded", String(isOpen));
 });
 
 renderHome();
@@ -627,6 +649,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
 }
 
 let installPrompt = null;
+
 window.addEventListener("beforeinstallprompt", event => {
   event.preventDefault();
   installPrompt = event;
@@ -635,6 +658,7 @@ window.addEventListener("beforeinstallprompt", event => {
 
 document.getElementById("install-button").addEventListener("click", async () => {
   if (!installPrompt) return;
+
   installPrompt.prompt();
   await installPrompt.userChoice;
   installPrompt = null;
