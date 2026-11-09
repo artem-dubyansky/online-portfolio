@@ -409,3 +409,26 @@ input[type="radio"], input[type="checkbox"] { accent-color: var(--accent-strong)
     transition-duration: .01ms !important;
   }
 }
+
+
+/* Карточки профессий открывают подробную информацию */
+.profession-card {
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+.profession-card:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.profession-hint {
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 700;
+  margin-top: auto;
+}
+.profession-details {
+  grid-column: 1 / -1;
+  max-width: 780px;
+}
