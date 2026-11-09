@@ -1,58 +1,86 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#080c14">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Онлайн-портфолио и навигатор профильного поступления</title>
-
-    <meta name="description" content="Инженерное портфолио ученика 8 Д класса с прикреплением грамот, картой компетенций и расчетом поступления C++ WebAssembly.">
-    <meta name="author" content="Дубянский Артём">
-
-    <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101827">
+  <meta name="description" content="Навигатор будущего — исследуй профессии, развивай навыки и создавай свой образовательный маршрут.">
+  <title>Навигатор будущего</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
 </head>
 <body>
-    <div class="app-container">
-        <header class="app-header">
-            <div class="header-badge">8 «Д» класс • МГТУ им. Н.Э. Баумана • Школа № 1580</div>
-            <h1>Онлайн-портфолио</h1>
-            <p>Профориентация, достижения и навигатор профильного поступления</p>
-            <div id="pwa-install-banner" style="display: none; margin-top: 10px;">
-                <button id="pwa-install-btn" class="btn-secondary" style="font-size: 12px; padding: 6px 14px; border-color: #3b82f6; color: #60a5fa;">
-                    📲 Установить как приложение на экран телефона
-                </button>
-            </div>
-        </header>
+  <header class="header">
+    <a class="logo" href="#" data-page="home">
+      <span class="logo-mark">Н</span>
+      <span>Навигатор будущего</span>
+    </a>
 
-        <nav class="tabs-nav">
-            <button class="tab-btn" data-tab="0">Тестирование</button>
-            <button class="tab-btn active" data-tab="1">Анкета и Портфолио</button>
-            <button class="tab-btn" data-tab="2">Навигатор школ (C++)</button>
-        </nav>
+    <button class="menu-toggle" id="menu-toggle" aria-label="Открыть меню" aria-expanded="false">☰</button>
 
-        <main class="content-card" id="main-content">
-            <h2>Загрузка модуля...</h2>
-        </main>
-    </div>
+    <nav class="nav" id="navigation" aria-label="Основная навигация">
+      <button data-page="orientation">Профориентация</button>
+      <button data-page="professions">Мир профессий</button>
+      <button data-page="practice">Практика и проекты</button>
+      <button data-page="education">Образование</button>
+      <button data-page="route">Мой маршрут</button>
+      <button data-page="portfolio">Портфолио</button>
+      <button data-page="opportunities">Возможности</button>
+      <button data-page="admission">Поступление</button>
+    </nav>
 
-    <!-- Модальное окно просмотра бланка А4 -->
-    <div id="print-modal" class="modal-overlay" style="display: none;">
-        <div class="modal-window">
-            <div class="modal-top-bar no-print">
-                <span style="font-weight: 700; font-size: 13px;">Официальный бланк портфолио</span>
-                <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-                    <button id="modal-doc-action" class="btn-action-doc">📥 В Word (.doc)</button>
-                    <button id="modal-print-action" class="btn-action-print">🖨️ Печать / PDF</button>
-                    <button id="modal-close-action" class="btn-action-close">✕</button>
-                </div>
-            </div>
-            <div id="print-sheet-content" class="printable-sheet"></div>
-        </div>
-    </div>
+    <button class="profile-button" data-page="portfolio">Мой профиль</button>
+  </header>
 
-    <script src="app.js"></script>
+  <main id="app" class="main" tabindex="-1">
+    <section class="hero">
+      <div class="hero-content">
+        <span class="eyebrow">ТВОЁ БУДУЩЕЕ НАЧИНАЕТСЯ ЗДЕСЬ</span>
+        <h1>Найди своё направление.<br><span>Построй собственный путь.</span></h1>
+        <p>Исследуй профессии, пробуй себя в разных направлениях, развивай навыки и создавай портфолио.</p>
+        <button class="primary-button" data-page="orientation">Начать профориентацию →</button>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="hero-circle">Н</div>
+        <div class="orbit orbit-a"></div>
+        <div class="orbit orbit-b"></div>
+      </div>
+    </section>
+
+    <section class="home-section">
+      <div class="section-heading">
+        <span class="eyebrow">ВОЗМОЖНОСТИ ПЛАТФОРМЫ</span>
+        <h2>Твой путь к будущей профессии</h2>
+        <p>Восемь разделов, которые помогут разобраться в интересах и целях.</p>
+      </div>
+
+      <div class="feature-grid">
+        <button class="feature-card" data-page="orientation"><span class="feature-number">01</span><span class="feature-icon">◎</span><strong>Профориентация</strong><span>Тесты и определение интересующих направлений.</span></button>
+        <button class="feature-card" data-page="professions"><span class="feature-number">02</span><span class="feature-icon">◇</span><strong>Мир профессий</strong><span>Знакомство с профессиями и их задачами.</span></button>
+        <button class="feature-card" data-page="practice"><span class="feature-number">03</span><span class="feature-icon">⌘</span><strong>Практика и проекты</strong><span>Задания и создание собственных проектов.</span></button>
+        <button class="feature-card" data-page="education"><span class="feature-number">04</span><span class="feature-icon">▤</span><strong>Образование</strong><span>Учебные направления и курсы.</span></button>
+        <button class="feature-card" data-page="route"><span class="feature-number">05</span><span class="feature-icon">⌁</span><strong>Мой маршрут</strong><span>Личные цели и план развития.</span></button>
+        <button class="feature-card" data-page="portfolio"><span class="feature-number">06</span><span class="feature-icon">▣</span><strong>Портфолио</strong><span>Проекты, достижения и навыки.</span></button>
+        <button class="feature-card" data-page="opportunities"><span class="feature-number">07</span><span class="feature-icon">✳</span><strong>Возможности</strong><span>Олимпиады, конкурсы и мероприятия.</span></button>
+        <button class="feature-card" data-page="admission"><span class="feature-number">08</span><span class="feature-icon">↗</span><strong>Поступление</strong><span>Вузы, специальности и подготовка.</span></button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <strong>Навигатор будущего</strong>
+    <p>Образовательная платформа для исследования профессий и развития.</p>
+    <span>© 2026 Навигатор будущего</span>
+  </footer>
+
+  <div class="install-banner" id="install-banner" hidden>
+    <span>Установить приложение на устройство?</span>
+    <button id="install-button">Установить</button>
+    <button id="install-close" aria-label="Закрыть">×</button>
+  </div>
+
+  <noscript>Для работы платформы необходимо включить JavaScript.</noscript>
 </body>
 </html>
