@@ -771,12 +771,16 @@ function exportData() {
 
 
 function addSectionStepper() {
-  const order = Object.keys(pages), index = order.indexOf(currentPage);
-  if (index < 0 || document.querySelector(".section-stepper")) return;
+  const order = Object.keys(pages);
+  const index = order.indexOf(currentPage);
+  const page = app.querySelector(".page");
+  if (index < 0 || !page) return;
   const previous = index > 0 ? order[index - 1] : "home";
   const next = index < order.length - 1 ? order[index + 1] : "home";
-  app.insertAdjacentHTML("beforeend", `<nav class="section-stepper" aria-label="Переход между разделами">
-    <button type="button" data-page="${previous}" >← Назад</button>
+  const oldStepper = page.querySelector(".section-stepper");
+  if (oldStepper) oldStepper.remove();
+  page.insertAdjacentHTML("beforeend", `<nav class="section-stepper" aria-label="Переход между разделами">
+    <button type="button" data-page="${previous}">← Назад</button>
     <span class="step-caption">Раздел ${index + 1} из ${order.length}<br>${escapeHTML(pages[currentPage].title)}</span>
     <button type="button" data-page="${next}">${index === order.length - 1 ? "На главную" : "Далее →"}</button>
   </nav>`);
