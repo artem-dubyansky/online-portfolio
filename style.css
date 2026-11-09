@@ -365,3 +365,47 @@ textarea { min-height: 100px; resize: vertical; }
   .form-card { padding: 17px; }
   .install-banner { flex-wrap: wrap; }
 }
+
+
+/* Дополнительные состояния интерфейса */
+button:disabled { opacity: .55; cursor: not-allowed; }
+button:active { transform: translateY(1px); }
+.nav button:focus-visible, .feature-card:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.content-card { overflow-wrap: anywhere; }
+.list-row > * { min-width: 0; }
+.check-row { flex: 1; }
+.check-row span { overflow-wrap: anywhere; }
+.status-error {
+  color: #ffc1c1;
+  background: rgba(170, 48, 65, .14);
+  border: 1px solid rgba(255, 120, 140, .25);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 12px 0;
+}
+.status-success {
+  color: #b8edca;
+  background: rgba(48, 150, 90, .12);
+  border: 1px solid rgba(120, 220, 160, .2);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 12px 0;
+}
+.page-header p { max-width: 720px; }
+.form-card h2 { margin-top: 0; }
+input[type="radio"], input[type="checkbox"] { accent-color: var(--accent-strong); }
+@media (max-width: 650px) {
+  .list-row { align-items: flex-start; }
+  .install-banner { bottom: 10px; left: 10px; right: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
