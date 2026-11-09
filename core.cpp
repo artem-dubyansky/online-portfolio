@@ -1,52 +1,32 @@
+
 #include <algorithm>
 
-// Экспорт функции в WebAssembly (без искажения имени функции компилятором)
 extern "C" {
 
-/**
- * Расчет индекса совместимости (в процентах от 0 до 100)
- * 
- * @param trackMatch      1, если выбранный профиль совпадает с профилем школы, иначе 0
- * @param matchedSkills   Количество совпавших навыков и дисциплин из стека (от 0 до 3+)
- * @param hasAchievement  1, если у ученика есть олимпиадные достижения (победитель/призер), иначе 0
- * @param scoreDelta      Разница между прогнозируемым баллом ученика и проходным порогом
- * 
- * @return Итоговый процент совместимости (int)
- */
-int calculateMatchScore(int trackMatch, int matchedSkills, int hasAchievement, int scoreDelta) {
-    // Базовый уровень совместимости
-    int baseScore = 55;
+// Расчёт индекса соответствия профиля ученика выбранному направлению.
+// trackMatch: 1 — профиль совпадает, 0 — не совпадает.
+// matchedSkills: количество совпавших навыков (0–3).
+// hasAchievement: 1 — есть достижения, 0 — нет.
 
-    // Вклад совпадения профильного направления: +18% при точном совпадении, +5% при смежном
-    int trackBonus = trackMatch ? 18 : 5;
+int calculateMatchScore(
+    int trackMatch,
+    int matchedSkills,
+    int hasAchievement
+) {
+    trackMatch = std::clamp(trackMatch, 0, 1);
+    matchedSkills = std::clamp(matchedSkills, 0, 3);
+    hasAchievement = std::clamp(hasAchievement, 0, 1);
 
-    // Вклад практических навыков (до 3 навыков по 6% каждый)
-    int skillsClamped = std::min(matchedSkills, 3);
-    int skillsBonus = skillsClamped * 6;
+    int score = 40;
 
-    // Вклад дипломов олимпиад и конкурсов (+7% при наличии побед/призовых мест)
-    int achievementBonus = hasAchievement ? 7 : 0;
-
-    // Корректировка по успеваемости и проходному баллу
-    int deltaBonus = 0;
-    if (scoreDelta >= 5) {
-        deltaBonus = 8;
-    } else if (scoreDelta >= 0) {
-        deltaBonus = 4;
-    } else if (scoreDelta >= -5) {
-        deltaBonus = -4;
-    } else {
-        deltaBonus = -10;
+    if (trackMatch == 1) {
+        score += 25;
     }
 
-    // Итоговая сумма
-    int total = baseScore + trackBonus + skillsBonus + achievementBonus + deltaBonus;
+    score += matchedSkills * 10;
+    score += hasAchievement * 5;
 
-    // Ограничение диапазона от 45% до 99%
-    if (total < 45) total = 45;
-    if (total > 99) total = 99;
-
-    return total;
+    return std::clamp(score, 0, 100);
 }
 
 }
