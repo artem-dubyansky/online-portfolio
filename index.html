@@ -5,9 +5,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#101827">
+  <meta name="color-scheme" content="dark">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Навигатор">
   <meta name="description" content="Навигатор будущего — исследуй профессии, развивай навыки и создавай свой образовательный маршрут.">
   <title>Навигатор будущего</title>
   <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon-192.svg">
   <link rel="stylesheet" href="style.css">
   <script src="app.js" defer></script>
 </head>
@@ -18,7 +23,7 @@
       <span>Навигатор будущего</span>
     </a>
 
-    <button class="menu-toggle" id="menu-toggle" aria-label="Открыть меню" aria-expanded="false">☰</button>
+    <button class="menu-toggle" id="menu-toggle" aria-label="Открыть меню" aria-controls="navigation" aria-expanded="false">☰</button>
 
     <nav class="nav" id="navigation" aria-label="Основная навигация">
       <button data-page="orientation">Профориентация</button>
