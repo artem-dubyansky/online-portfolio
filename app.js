@@ -28,9 +28,33 @@ function loadData() {
 
 let data = loadData();
 let quizAnswers = {};
+let currentPage = "home";
+
+function createId() {
+  if (globalThis.crypto && typeof crypto.randomUUID === "function") {
+    return createId();
+  }
+  return "id-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2);
+}
+
+function readStorage(key, fallback) {
+  try {
+    const value = localStorage.getItem(key);
+    return value === null ? fallback : JSON.parse(value);
+  } catch {
+    return fallback;
+  }
+}
 
 function saveData() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    return true;
+  } catch (error) {
+    console.error("Не удалось сохранить данные:", error);
+    alert("Браузер не смог сохранить изменения. Проверь свободное место и настройки хранения сайта.");
+    return false;
+  }
 }
 
 function escapeHTML(value) {
@@ -335,7 +359,7 @@ function renderRoute() {
     const title = input.value.trim();
     if (!title) return;
 
-    data.route.push({ id: crypto.randomUUID(), title, done: false });
+    data.route.push({ id: createId(), title, done: false });
     saveData();
     input.value = "";
     drawRoute();
@@ -381,10 +405,11 @@ function renderPortfolio() {
     </div>
     <div class="form-card">
       <h2>Экспорт данных</h2>
-      <p class="muted small">Скачай резервную копию портфолио в формате JSON.</p>
+      <p class="muted small">Резервная копия включает профиль, тест, проекты, достижения и маршрут. Файл хранится на твоём устройстве.</p>
       <button class="secondary-button" id="export-data">Скачать резервную копию</button>
       <button class="danger-button" id="clear-data">Удалить все данные на этом устройстве</button>
     </div>
+    <p class="notice">Важно: сейчас данные сохраняются только в этом браузере. Они не синхронизируются с другими устройствами и не отправляются на сервер.</p>
   </section>`;
 
   document.getElementById("profile-save").addEventListener("click", () => {
@@ -400,7 +425,7 @@ function renderPortfolio() {
 
     if (!title) return alert("Укажи название проекта.");
 
-    data.projects.push({ id: crypto.randomUUID(), title, description });
+    data.projects.push({ id: createId(), title, description });
     saveData();
     drawProjects();
 
@@ -413,7 +438,7 @@ function renderPortfolio() {
     const title = input.value.trim();
     if (!title) return;
 
-    data.achievements.push({ id: crypto.randomUUID(), title });
+    data.achievements.push({ id: createId(), title });
     saveData();
     input.value = "";
     drawAchievements();
@@ -424,7 +449,10 @@ function renderPortfolio() {
   document.getElementById("clear-data").addEventListener("click", () => {
     if (!confirm("Точно удалить все данные портфолио и маршрута на этом устройстве?")) return;
 
-    data = structuredClone(defaultData);
+    data = JSON.parse(JSON.stringify(defaultData));
+    try {
+      localStorage.removeItem("navigator_universities_v1");
+    } catch {}
     saveData();
     renderPortfolio();
   });
@@ -469,13 +497,8 @@ function renderOpportunities() {
 
 function renderAdmission() {
   const key = "navigator_universities_v1";
-  let universities = [];
-
-  try {
-    universities = JSON.parse(localStorage.getItem(key)) || [];
-  } catch {
-    universities = [];
-  }
+  let universities = readStorage(key, []);
+  if (!Array.isArray(universities)) universities = [];
 
   app.innerHTML = `<section class="page">${pageHeader("admission")}
     <div class="notice">Правила приёма, экзамены и проходные баллы необходимо проверять на официальном сайте каждого учебного заведения.</div>
@@ -505,7 +528,13 @@ function renderAdmission() {
     if (!name) return;
 
     universities.push(name);
-    localStorage.setItem(key, JSON.stringify(universities));
+    try {
+      localStorage.setItem(key, JSON.stringify(universities));
+    } catch {
+      universities.pop();
+      alert("Не удалось сохранить список. Проверь настройки хранения браузера.");
+      return;
+    }
     input.value = "";
     draw();
   });
@@ -514,7 +543,13 @@ function renderAdmission() {
 }
 
 function exportData() {
-  const blob = new Blob([JSON.stringify(data, null, 2)], {
+  const backup = {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    portfolio: data,
+    universities: readStorage("navigator_universities_v1", [])
+  };
+  const blob = new Blob([JSON.stringify(backup, null, 2)], {
     type: "application/json"
   });
 
@@ -523,7 +558,7 @@ function exportData() {
   link.href = url;
   link.download = "navigator-future-portfolio.json";
   link.click();
-  URL.revokeObjectURL(url);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 function navigate(page) {
@@ -599,7 +634,7 @@ document.addEventListener("click", event => {
   const addRoute = event.target.closest("[data-add-route]");
   if (addRoute) {
     data.route.push({
-      id: crypto.randomUUID(),
+      id: createId(),
       title: `Практика: ${addRoute.dataset.addRoute}`,
       done: false
     });
@@ -611,14 +646,15 @@ document.addEventListener("click", event => {
   const universityDelete = event.target.closest("[data-university-delete]");
   if (universityDelete) {
     const key = "navigator_universities_v1";
-    let universities = [];
-
-    try {
-      universities = JSON.parse(localStorage.getItem(key)) || [];
-    } catch {}
-
+    let universities = readStorage(key, []);
+    if (!Array.isArray(universities)) universities = [];
     universities.splice(Number(universityDelete.dataset.universityDelete), 1);
-    localStorage.setItem(key, JSON.stringify(universities));
+    try {
+      localStorage.setItem(key, JSON.stringify(universities));
+    } catch {
+      alert("Не удалось обновить список в хранилище браузера.");
+      return;
+    }
     renderAdmission();
   }
 });
