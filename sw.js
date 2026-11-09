@@ -1,11 +1,11 @@
 "use strict";
 
-const CACHE_NAME = "navigator-future-v6";
+const CACHE_NAME = "navigator-future-v7";
 const APP_FILES = [
   "./",
   "./index.html",
   "./style.css",
-  "./app.js?v=6",
+  "./app.js?v=7",
   "./manifest.json",
   "./icon.svg",
   "./icon-192.svg",
