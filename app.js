@@ -355,11 +355,11 @@ function renderEducation() {
   let items = readStorage(key, []);
   if (!Array.isArray(items)) items = [];
   const kinds = ["Курс", "Кружок", "Образовательная программа", "Летняя школа", "Самостоятельное обучение"];
-  app.innerHTML = \`<section class="page">\${pageHeader("education")}
+  app.innerHTML = `<section class="page">${pageHeader("education")}
     <div class="notice">Добавляй только те программы, у которых ты проверил организатора, сроки и условия на официальной странице. Платформа пока не подключена к автоматическому каталогу.</div>
     <div class="form-card"><h2>Добавить обучение</h2>
       <div class="form-group"><label for="edu-title">Название</label><input id="edu-title" maxlength="140" placeholder="Название курса или программы"></div>
-      <div class="form-group"><label for="edu-kind">Тип</label><select id="edu-kind">\${kinds.map(x => \`<option>\${x}</option>\`).join("")}</select></div>
+      <div class="form-group"><label for="edu-kind">Тип</label><select id="edu-kind">${kinds.map(x => `<option>${x}</option>`).join("")}</select></div>
       <div class="form-group"><label for="edu-organizer">Организатор</label><input id="edu-organizer" maxlength="120" placeholder="Школа, университет, образовательная платформа"></div>
       <div class="form-group"><label for="edu-direction">Направление</label><input id="edu-direction" maxlength="100" placeholder="Например: инженерия, программирование"></div>
       <div class="form-group"><label for="edu-age">Возраст или класс</label><input id="edu-age" maxlength="80" placeholder="Например: 8–11 класс"></div>
@@ -375,18 +375,18 @@ function renderEducation() {
       <article class="content-card"><h3>Дополнительное образование</h3><p>Курсы, кружки, образовательные центры и онлайн-программы.</p></article>
       <article class="content-card"><h3>Самостоятельное развитие</h3><p>Учебные материалы, видеоуроки и индивидуальные планы.</p></article>
       <article class="content-card"><h3>Образовательные программы</h3><p>Летние школы, интенсивы и профильные смены.</p></article>
-    </div></section>\`;
+    </div></section>`;
   const draw = () => {
     const list = document.getElementById("education-list");
     if (!list) return;
-    list.innerHTML = items.length ? items.map((item, i) => \`<article class="content-card">
-      <div class="list-row"><h3>\${escapeHTML(item.title)}</h3><span class="tag">\${escapeHTML(item.kind)}</span></div>
-      <p><strong>Организатор:</strong> \${escapeHTML(item.organizer || "Не указан")}</p>
-      <p><strong>Направление:</strong> \${escapeHTML(item.direction || "Не указано")}</p>
-      <p><strong>Возраст/класс:</strong> \${escapeHTML(item.age || "Не указано")} · <strong>Сроки:</strong> \${escapeHTML(item.dates || "Не указаны")}</p>
-      <p><strong>Стоимость:</strong> \${escapeHTML(item.cost || "Не указана")}</p><p>\${escapeHTML(item.conditions || "")}</p>
-      <a href="\${escapeHTML(item.source)}" target="_blank" rel="noopener noreferrer">Официальная страница</a>
-      <button class="danger-button" data-edu-delete="\${i}">Удалить из списка</button></article>\`).join("") : '<p class="empty-state">Пока ничего не добавлено. Сохраняй проверенные курсы и программы.</p>';
+    list.innerHTML = items.length ? items.map((item, i) => `<article class="content-card">
+      <div class="list-row"><h3>${escapeHTML(item.title)}</h3><span class="tag">${escapeHTML(item.kind)}</span></div>
+      <p><strong>Организатор:</strong> ${escapeHTML(item.organizer || "Не указан")}</p>
+      <p><strong>Направление:</strong> ${escapeHTML(item.direction || "Не указано")}</p>
+      <p><strong>Возраст/класс:</strong> ${escapeHTML(item.age || "Не указано")} · <strong>Сроки:</strong> ${escapeHTML(item.dates || "Не указаны")}</p>
+      <p><strong>Стоимость:</strong> ${escapeHTML(item.cost || "Не указана")}</p><p>${escapeHTML(item.conditions || "")}</p>
+      <a href="${escapeHTML(item.source)}" target="_blank" rel="noopener noreferrer">Официальная страница</a>
+      <button class="danger-button" data-edu-delete="${i}">Удалить из списка</button></article>`).join("") : '<p class="empty-state">Пока ничего не добавлено. Сохраняй проверенные курсы и программы.</p>';
   };
   document.getElementById("edu-add").addEventListener("click", () => {
     const get = id => document.getElementById(id).value.trim();
@@ -447,15 +447,15 @@ function drawRoute() {
 function renderPortfolio() {
   const profile = { city: "", school: "", interests: "", skills: "", ...(data.profile || {}) };
   data.profile = profile;
-  app.innerHTML = \`<section class="page">\${pageHeader("portfolio")}
+  app.innerHTML = `<section class="page">${pageHeader("portfolio")}
     <div class="form-card">
       <h2>Анкета ученика</h2>
-      <div class="form-group"><label for="profile-name">ФИО или имя для портфолио</label><input id="profile-name" maxlength="100" value="\${escapeHTML(profile.name)}"></div>
-      <div class="form-group"><label for="profile-grade">Класс или курс</label><input id="profile-grade" maxlength="30" value="\${escapeHTML(profile.grade)}"></div>
-      <div class="form-group"><label for="profile-school">Школа / учебное заведение</label><input id="profile-school" maxlength="160" value="\${escapeHTML(profile.school)}"></div>
-      <div class="form-group"><label for="profile-city">Город</label><input id="profile-city" maxlength="100" value="\${escapeHTML(profile.city)}"></div>
-      <div class="form-group"><label for="profile-interests">Интересующие направления</label><textarea id="profile-interests" maxlength="500">\${escapeHTML(profile.interests)}</textarea></div>
-      <div class="form-group"><label for="profile-skills">Навыки и дисциплины</label><textarea id="profile-skills" maxlength="500">\${escapeHTML(profile.skills)}</textarea></div>
+      <div class="form-group"><label for="profile-name">ФИО или имя для портфолио</label><input id="profile-name" maxlength="100" value="${escapeHTML(profile.name)}"></div>
+      <div class="form-group"><label for="profile-grade">Класс или курс</label><input id="profile-grade" maxlength="30" value="${escapeHTML(profile.grade)}"></div>
+      <div class="form-group"><label for="profile-school">Школа / учебное заведение</label><input id="profile-school" maxlength="160" value="${escapeHTML(profile.school)}"></div>
+      <div class="form-group"><label for="profile-city">Город</label><input id="profile-city" maxlength="100" value="${escapeHTML(profile.city)}"></div>
+      <div class="form-group"><label for="profile-interests">Интересующие направления</label><textarea id="profile-interests" maxlength="500">${escapeHTML(profile.interests)}</textarea></div>
+      <div class="form-group"><label for="profile-skills">Навыки и дисциплины</label><textarea id="profile-skills" maxlength="500">${escapeHTML(profile.skills)}</textarea></div>
       <button class="primary-button" id="profile-save">Сохранить анкету и грамоты</button>
     </div>
     <div class="form-card">
@@ -469,7 +469,7 @@ function renderPortfolio() {
       <div class="form-group"><label for="achievement-title">Название олимпиады или конкурса</label><input id="achievement-title" maxlength="160" placeholder="Можно ввести своё название"></div>
       <div class="form-group"><label for="achievement-subject">Предмет / направление</label><select id="achievement-subject">
         <option>Математика</option><option>Физика</option><option>Информатика</option><option>Химия</option><option>Биология</option><option>Русский язык</option><option>Иностранный язык</option><option>История</option><option>Обществознание</option><option>Инженерия и технологии</option><option>Другое</option></select></div>
-      <div class="form-group"><label for="achievement-grade">Класс участия</label><select id="achievement-grade">\${Array.from({length:11},(_,i)=>\`<option>\${i+1} класс</option>\`).join("")}</select></div>
+      <div class="form-group"><label for="achievement-grade">Класс участия</label><select id="achievement-grade">${Array.from({length:11},(_,i)=>`<option>${i+1} класс</option>`).join("")}</select></div>
       <div class="form-group"><label for="achievement-stage">Этап</label><select id="achievement-stage"><option>Школьный</option><option>Муниципальный</option><option>Региональный</option><option>Заключительный</option><option>Отборочный</option><option>Другой</option></select></div>
       <div class="form-group"><label for="achievement-result">Результат</label><select id="achievement-result"><option>Участник</option><option>Призёр</option><option>Победитель</option><option>Дипломант</option><option>Другое</option></select></div>
       <div class="form-group"><label for="achievement-year">Год участия</label><input id="achievement-year" maxlength="4" inputmode="numeric" placeholder="Например: 2026"></div>
@@ -488,7 +488,7 @@ function renderPortfolio() {
       <button class="danger-button" id="clear-data">Удалить все данные на этом устройстве</button>
     </div>
     <p class="notice">Данные сохраняются в этом браузере на текущем устройстве. Они не отправляются на сервер и не синхронизируются. Если очистить данные сайта, локальная копия может быть потеряна — регулярно скачивай резервный файл.</p>
-  </section>\`;
+  </section>`;
   document.getElementById("profile-save").addEventListener("click", () => {
     data.profile = {
       name: document.getElementById("profile-name").value.trim(),
@@ -587,22 +587,22 @@ function buildPortfolioHTML() {
   const p = data.profile || {};
   const achievements = data.achievements.map(item => {
     const x = getAchievementDetails(item);
-    return \`<article class="achievement"><h3>\${escapeHTML(x.title)}</h3><p>\${escapeHTML([x.subject,x.grade,x.stage,x.result,x.year].filter(Boolean).join(" · "))}</p>\${item.photo ? \`<img class="certificate" src="\${item.photo}" alt="Фото грамоты: \${escapeHTML(x.title)}">\` : ""}</article>\`;
+    return `<article class="achievement"><h3>${escapeHTML(x.title)}</h3><p>${escapeHTML([x.subject,x.grade,x.stage,x.result,x.year].filter(Boolean).join(" · "))}</p>${item.photo ? `<img class="certificate" src="${item.photo}" alt="Фото грамоты: ${escapeHTML(x.title)}">` : ""}</article>`;
   }).join("");
-  const projects = data.projects.map(x => \`<article><h3>\${escapeHTML(x.title)}</h3><p>\${escapeHTML(x.description || "")}</p></article>\`).join("");
-  return \`<!doctype html><html lang="ru"><head><meta charset="utf-8"><title>Портфолио</title><style>
+  const projects = data.projects.map(x => `<article><h3>${escapeHTML(x.title)}</h3><p>${escapeHTML(x.description || "")}</p></article>`).join("");
+  return `<!doctype html><html lang="ru"><head><meta charset="utf-8"><title>Портфолио</title><style>
     body{font:14px Arial,sans-serif;color:#111;max-width:850px;margin:35px auto;line-height:1.5}
     h1{font-size:26px;border-bottom:2px solid #333;padding-bottom:10px}h2{font-size:19px;margin-top:28px;border-bottom:1px solid #aaa;padding-bottom:5px}
     h3{font-size:15px;margin-bottom:4px}.muted{color:#555}.achievement,article{break-inside:avoid;margin:12px 0;padding:10px;border:1px solid #ddd}
     .certificate{display:block;max-width:100%;max-height:650px;object-fit:contain;margin:10px auto}
     @media print{body{margin:12mm;max-width:none}.certificate{max-height:230mm}}
   </style></head><body><h1>Портфолио ученика</h1>
-    <p><strong>ФИО:</strong> \${escapeHTML(p.name || "Не заполнено")}</p><p><strong>Класс:</strong> \${escapeHTML(p.grade || "Не заполнено")}</p>
-    <p><strong>Школа:</strong> \${escapeHTML(p.school || "Не заполнено")}</p><p><strong>Город:</strong> \${escapeHTML(p.city || "Не заполнено")}</p>
-    <p><strong>Интересы:</strong> \${escapeHTML(p.interests || "Не указаны")}</p><p><strong>Навыки:</strong> \${escapeHTML(p.skills || "Не указаны")}</p>
-    <h2>Проекты</h2>\${projects || "<p>Проекты не добавлены.</p>"}
-    <h2>Олимпиады, конкурсы и достижения</h2>\${achievements || "<p>Достижения не добавлены.</p>"}
-    <p class="muted">Сформировано в «Навигаторе будущего» · \${new Date().toLocaleDateString("ru-RU")}</p></body></html>\`;
+    <p><strong>ФИО:</strong> ${escapeHTML(p.name || "Не заполнено")}</p><p><strong>Класс:</strong> ${escapeHTML(p.grade || "Не заполнено")}</p>
+    <p><strong>Школа:</strong> ${escapeHTML(p.school || "Не заполнено")}</p><p><strong>Город:</strong> ${escapeHTML(p.city || "Не заполнено")}</p>
+    <p><strong>Интересы:</strong> ${escapeHTML(p.interests || "Не указаны")}</p><p><strong>Навыки:</strong> ${escapeHTML(p.skills || "Не указаны")}</p>
+    <h2>Проекты</h2>${projects || "<p>Проекты не добавлены.</p>"}
+    <h2>Олимпиады, конкурсы и достижения</h2>${achievements || "<p>Достижения не добавлены.</p>"}
+    <p class="muted">Сформировано в «Навигаторе будущего» · ${new Date().toLocaleDateString("ru-RU")}</p></body></html>`;
 }
 
 function downloadBlob(content, type, filename) {
@@ -614,7 +614,7 @@ function downloadBlob(content, type, filename) {
 }
 
 function exportPortfolioWord() {
-  downloadBlob("\\ufeff" + buildPortfolioHTML(), "application/msword;charset=utf-8", "portfolio-navigator-future.doc");
+  downloadBlob("\ufeff" + buildPortfolioHTML(), "application/msword;charset=utf-8", "portfolio-navigator-future.doc");
 }
 
 function printPortfolio() {
@@ -627,11 +627,11 @@ function printPortfolio() {
 
 function exportPortfolioText() {
   const p = data.profile || {};
-  const lines = ["ПОРТФОЛИО УЧЕНИКА", "", \`ФИО: \${p.name || "Не заполнено"}\`, \`Класс: \${p.grade || "Не заполнено"}\`, \`Школа: \${p.school || "Не заполнено"}\`, \`Город: \${p.city || "Не заполнено"}\`, \`Интересы: \${p.interests || "Не указаны"}\`, \`Навыки: \${p.skills || "Не указаны"}\`, "", "ПРОЕКТЫ"];
-  data.projects.forEach((x,i) => lines.push(\`\${i+1}. \${x.title}\`, x.description || ""));
+  const lines = ["ПОРТФОЛИО УЧЕНИКА", "", `ФИО: ${p.name || "Не заполнено"}`, `Класс: ${p.grade || "Не заполнено"}`, `Школа: ${p.school || "Не заполнено"}`, `Город: ${p.city || "Не заполнено"}`, `Интересы: ${p.interests || "Не указаны"}`, `Навыки: ${p.skills || "Не указаны"}`, "", "ПРОЕКТЫ"];
+  data.projects.forEach((x,i) => lines.push(`${i+1}. ${x.title}`, x.description || ""));
   lines.push("", "ОЛИМПИАДЫ, КОНКУРСЫ И ДОСТИЖЕНИЯ");
-  data.achievements.forEach((item,i) => { const x=getAchievementDetails(item); lines.push(\`\${i+1}. \${x.title}\`, [x.subject,x.grade,x.stage,x.result,x.year].filter(Boolean).join(" · ")); });
-  downloadBlob("\\ufeff" + lines.join("\\n"), "text/plain;charset=utf-8", "portfolio-navigator-future.txt");
+  data.achievements.forEach((item,i) => { const x=getAchievementDetails(item); lines.push(`${i+1}. ${x.title}`, [x.subject,x.grade,x.stage,x.result,x.year].filter(Boolean).join(" · ")); });
+  downloadBlob("\ufeff" + lines.join("\n"), "text/plain;charset=utf-8", "portfolio-navigator-future.txt");
 }
 
 function drawProjects() {
@@ -665,11 +665,11 @@ function renderOpportunities() {
   let items = readStorage(key, []);
   if (!Array.isArray(items)) items = [];
   const categories = ["Олимпиада", "Конкурс", "Хакатон", "Мероприятие", "Летняя программа"];
-  app.innerHTML = \`<section class="page">\${pageHeader("opportunities")}
+  app.innerHTML = `<section class="page">${pageHeader("opportunities")}
     <div class="notice">Это личный каталог возможностей. Непроверенные события не показываются как актуальные: добавляй запись после проверки организатора, дат, дедлайна и правил на официальном сайте.</div>
     <div class="form-card"><h2>Добавить возможность</h2>
       <div class="form-group"><label for="opp-title">Название</label><input id="opp-title" maxlength="140"></div>
-      <div class="form-group"><label for="opp-category">Категория</label><select id="opp-category">\${categories.map(x => \`<option>\${x}</option>\`).join("")}</select></div>
+      <div class="form-group"><label for="opp-category">Категория</label><select id="opp-category">${categories.map(x => `<option>${x}</option>`).join("")}</select></div>
       <div class="form-group"><label for="opp-organizer">Организатор</label><input id="opp-organizer" maxlength="140"></div>
       <div class="form-group"><label for="opp-direction">Направление</label><input id="opp-direction" maxlength="100" placeholder="Инженерия, IT, наука..."></div>
       <div class="form-group"><label for="opp-age">Возраст или класс</label><input id="opp-age" maxlength="80"></div>
@@ -679,20 +679,20 @@ function renderOpportunities() {
       <div class="form-group"><label for="opp-source">Официальная страница</label><input id="opp-source" type="url" maxlength="500" placeholder="https://..."></div>
       <button class="primary-button" id="opp-add">Добавить в каталог</button></div>
     <div class="form-card"><h2>Каталог</h2><input class="search-input" id="opp-search" placeholder="Поиск по названию, организатору или направлению"><div id="opportunity-list"></div></div>
-  </section>\`;
+  </section>`;
   const draw = () => {
     const list = document.getElementById("opportunity-list"); if (!list) return;
     const q = (document.getElementById("opp-search")?.value || "").toLowerCase();
-    const filtered = items.filter(x => \`\${x.title} \${x.organizer} \${x.direction} \${x.category}\`.toLowerCase().includes(q));
+    const filtered = items.filter(x => `${x.title} ${x.organizer} ${x.direction} ${x.category}`.toLowerCase().includes(q));
     list.innerHTML = filtered.length ? filtered.map(item => {
       const index = items.findIndex(x => x.id === item.id);
-      return \`<article class="content-card"><div class="list-row"><h3>\${escapeHTML(item.title)}</h3><span class="tag">\${escapeHTML(item.category)}</span></div>
-        <p><strong>Организатор:</strong> \${escapeHTML(item.organizer)}</p>
-        <p><strong>Направление:</strong> \${escapeHTML(item.direction || "Не указано")} · <strong>Возраст:</strong> \${escapeHTML(item.age || "Не указано")}</p>
-        <p><strong>Даты:</strong> \${escapeHTML(item.dates || "Не указаны")} · <strong>Дедлайн:</strong> \${escapeHTML(item.deadline || "Не указан")}</p>
-        <p><strong>Формат/стоимость:</strong> \${escapeHTML(item.format || "Не указаны")}</p>
-        <p class="small muted">Добавлено: \${escapeHTML(new Date(item.addedAt).toLocaleDateString("ru-RU"))}. Актуальность перепроверь у организатора.</p>
-        <a href="\${escapeHTML(item.source)}" target="_blank" rel="noopener noreferrer">Официальная страница</a><button class="danger-button" data-opp-delete="\${index}">Удалить</button></article>\`;
+      return `<article class="content-card"><div class="list-row"><h3>${escapeHTML(item.title)}</h3><span class="tag">${escapeHTML(item.category)}</span></div>
+        <p><strong>Организатор:</strong> ${escapeHTML(item.organizer)}</p>
+        <p><strong>Направление:</strong> ${escapeHTML(item.direction || "Не указано")} · <strong>Возраст:</strong> ${escapeHTML(item.age || "Не указано")}</p>
+        <p><strong>Даты:</strong> ${escapeHTML(item.dates || "Не указаны")} · <strong>Дедлайн:</strong> ${escapeHTML(item.deadline || "Не указан")}</p>
+        <p><strong>Формат/стоимость:</strong> ${escapeHTML(item.format || "Не указаны")}</p>
+        <p class="small muted">Добавлено: ${escapeHTML(new Date(item.addedAt).toLocaleDateString("ru-RU"))}. Актуальность перепроверь у организатора.</p>
+        <a href="${escapeHTML(item.source)}" target="_blank" rel="noopener noreferrer">Официальная страница</a><button class="danger-button" data-opp-delete="${index}">Удалить</button></article>`;
     }).join("") : '<p class="empty-state">Записей нет. Добавь событие после проверки официальных условий.</p>';
   };
   document.getElementById("opp-add").addEventListener("click", () => {
@@ -713,7 +713,7 @@ function renderAdmission() {
   let universities = readStorage(key, []);
   if (!Array.isArray(universities)) universities = [];
   universities = universities.map(item => typeof item === "string" ? { id: createId(), name: item, city: "", country: "", direction: "", level: "Не указан", exams: "", deadline: "", source: "", status: "Интересует" } : item);
-  app.innerHTML = \`<section class="page">\${pageHeader("admission")}
+  app.innerHTML = `<section class="page">${pageHeader("admission")}
     <div class="notice">Требования, экзамены, сроки и проходные баллы меняются. Вноси их только после проверки официального сайта учебного заведения и указывай год приёма.</div>
     <div class="form-card"><h2>Добавить учебное заведение</h2>
       <div class="form-group"><label for="uni-name">Название</label><input id="uni-name" maxlength="150" placeholder="Школа, колледж или университет"></div>
@@ -725,17 +725,17 @@ function renderAdmission() {
       <div class="form-group"><label for="uni-source">Официальный сайт / страница приёма</label><input id="uni-source" type="url" maxlength="500" placeholder="https://..."></div>
       <div class="form-group"><label for="uni-status">Статус</label><select id="uni-status"><option>Интересует</option><option>Изучаю</option><option>Планирую поступать</option></select></div>
       <button class="primary-button" id="university-add">Сохранить учебное заведение</button></div>
-    <div class="form-card"><h2>Мой список</h2><div id="university-list"></div></div></section>\`;
+    <div class="form-card"><h2>Мой список</h2><div id="university-list"></div></div></section>`;
   const list = document.getElementById("university-list");
   function save() { try { localStorage.setItem(key, JSON.stringify(universities)); return true; } catch { alert("Не удалось сохранить список. Проверь свободное место в браузере."); return false; } }
   function draw() {
-    list.innerHTML = universities.length ? universities.map(item => \`<article class="content-card">
-      <div class="list-row"><h3>\${escapeHTML(item.name)}</h3><span class="tag">\${escapeHTML(item.status || "Интересует")}</span></div>
-      <p>\${escapeHTML([item.city,item.country].filter(Boolean).join(", ") || "Местоположение не указано")}</p>
-      <p><strong>Направление:</strong> \${escapeHTML(item.direction || "Не указано")} · <strong>Уровень:</strong> \${escapeHTML(item.level || "Не указан")}</p>
-      <p><strong>Экзамены:</strong> \${escapeHTML(item.exams || "Не указаны")} · <strong>Сроки:</strong> \${escapeHTML(item.deadline || "Не указаны")}</p>
-      \${item.source ? \`<a href="\${escapeHTML(item.source)}" target="_blank" rel="noopener noreferrer">Официальный сайт</a>\` : '<p class="status-error">Официальный источник ещё не добавлен.</p>'}
-      <button class="danger-button" data-university-delete="\${escapeHTML(item.id)}">Удалить</button></article>\`).join("") : '<p class="empty-state">Список пока пуст. Добавь учебные заведения, которые хочешь изучить.</p>';
+    list.innerHTML = universities.length ? universities.map(item => `<article class="content-card">
+      <div class="list-row"><h3>${escapeHTML(item.name)}</h3><span class="tag">${escapeHTML(item.status || "Интересует")}</span></div>
+      <p>${escapeHTML([item.city,item.country].filter(Boolean).join(", ") || "Местоположение не указано")}</p>
+      <p><strong>Направление:</strong> ${escapeHTML(item.direction || "Не указано")} · <strong>Уровень:</strong> ${escapeHTML(item.level || "Не указан")}</p>
+      <p><strong>Экзамены:</strong> ${escapeHTML(item.exams || "Не указаны")} · <strong>Сроки:</strong> ${escapeHTML(item.deadline || "Не указаны")}</p>
+      ${item.source ? `<a href="${escapeHTML(item.source)}" target="_blank" rel="noopener noreferrer">Официальный сайт</a>` : '<p class="status-error">Официальный источник ещё не добавлен.</p>'}
+      <button class="danger-button" data-university-delete="${escapeHTML(item.id)}">Удалить</button></article>`).join("") : '<p class="empty-state">Список пока пуст. Добавь учебные заведения, которые хочешь изучить.</p>';
   }
   document.getElementById("university-add").addEventListener("click", () => {
     const get = id => document.getElementById(id).value.trim();
@@ -774,11 +774,11 @@ function addSectionStepper() {
   if (index < 0 || document.querySelector(".section-stepper")) return;
   const previous = index > 0 ? order[index - 1] : "home";
   const next = index < order.length - 1 ? order[index + 1] : "home";
-  app.insertAdjacentHTML("beforeend", \`<nav class="section-stepper" aria-label="Переход между разделами">
-    <button type="button" data-page="\${previous}" \${index === 0 ? "disabled" : ""}>← Назад</button>
-    <span class="step-caption">Раздел \${index + 1} из \${order.length}<br>\${escapeHTML(pages[currentPage].title)}</span>
-    <button type="button" data-page="\${next}">\${index === order.length - 1 ? "На главную" : "Далее →"}</button>
-  </nav>\`);
+  app.insertAdjacentHTML("beforeend", `<nav class="section-stepper" aria-label="Переход между разделами">
+    <button type="button" data-page="${previous}" ${index === 0 ? "disabled" : ""}>← Назад</button>
+    <span class="step-caption">Раздел ${index + 1} из ${order.length}<br>${escapeHTML(pages[currentPage].title)}</span>
+    <button type="button" data-page="${next}">${index === order.length - 1 ? "На главную" : "Далее →"}</button>
+  </nav>`);
 }
 
 function navigate(page) {
