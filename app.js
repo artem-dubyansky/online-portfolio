@@ -589,6 +589,25 @@ function navigate(page) {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
+// Надёжная навигация в capture-фазе: не зависит от обработчиков вложенных элементов.
+document.addEventListener("click", event => {
+  const target = event.target instanceof Element ? event.target : event.target?.parentElement;
+  const pageButton = target?.closest("[data-page]");
+  if (!pageButton) return;
+
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  try {
+    navigate(pageButton.dataset.page);
+  } catch (error) {
+    console.error("Ошибка перехода между разделами:", error);
+    const appRoot = document.getElementById("app");
+    if (appRoot) {
+      appRoot.innerHTML = '<section class="page"><div class="status-error"><strong>Не удалось открыть раздел.</strong><p>Обнови страницу. Если ошибка повторится, сообщи об этом разработчику.</p></div></section>';
+    }
+  }
+}, true);
+
 document.addEventListener("click", event => {
   const pageButton = event.target.closest("[data-page]");
 
