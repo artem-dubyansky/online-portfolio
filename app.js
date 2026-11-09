@@ -480,8 +480,8 @@ function renderPortfolio() {
       <h2>Экспорт портфолио</h2>
       <p class="muted small">Word — редактируемый документ. PDF — откроется окно печати, где можно выбрать «Сохранить как PDF». TXT — простой читаемый текст. JSON оставлен только для резервной копии и восстановления.</p>
       <div class="export-actions">
-        <button class="primary-button" id="portfolio-word">Открыть официальный бланк (Word)</button>
-        <button class="secondary-button" id="portfolio-pdf">Открыть бланк для PDF / печати</button>
+        <button class="primary-button" id="portfolio-word">Открыть официальный бланк с фото (Word)</button>
+        <button class="secondary-button" id="portfolio-pdf">Открыть официальный бланк с фото (PDF / печать)</button>
         <button class="secondary-button" id="portfolio-text">Скачать текст портфолио (TXT)</button>
         <button class="secondary-button" id="export-data">Скачать техническую резервную копию (JSON)</button>
       </div>
