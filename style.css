@@ -432,3 +432,15 @@ input[type="radio"], input[type="checkbox"] { accent-color: var(--accent-strong)
   grid-column: 1 / -1;
   max-width: 780px;
 }
+
+.section-stepper { display:flex; align-items:center; justify-content:space-between; gap:14px; padding:18px 0 28px; border-top:1px solid var(--border); margin-top:30px; }
+.section-stepper .step-caption { color:var(--muted); font-size:13px; text-align:center; }
+.section-stepper button { border:1px solid var(--border); border-radius:10px; padding:10px 15px; background:var(--panel-light); color:var(--text); font-weight:700; }
+.section-stepper button:disabled { opacity:.35; }
+.content-card a { color:var(--accent); overflow-wrap:anywhere; }
+@media print { .header,.footer,.section-stepper,.install-banner,button { display:none !important; } body { background:#fff; color:#111; } .main { width:100%; } .page { padding:0; } .form-card,.content-card { break-inside:avoid; background:#fff; color:#111; border:1px solid #ccc; } }
+
+.export-actions { display:flex; flex-wrap:wrap; gap:10px; }
+.export-actions button { margin-top:8px; }
+.certificate-preview { display:block; max-width:min(100%,520px); max-height:280px; object-fit:contain; border-radius:10px; border:1px solid var(--border); margin:10px 0; }
+@media print { .certificate-preview { max-height:220px; } }
