@@ -587,7 +587,7 @@ function buildPortfolioHTML() {
   const p = data.profile || {};
   const achievements = data.achievements.map(item => {
     const x = getAchievementDetails(item);
-    return `<article class="achievement"><h3>${escapeHTML(x.title)}</h3><p>${escapeHTML([x.subject,x.grade,x.stage,x.result,x.year].filter(Boolean).join(" · "))}</p>${item.photo ? `<img class="certificate" src="${item.photo}" alt="Фото грамоты: ${escapeHTML(x.title)}">` : ""}</article>`;
+    return `<article class="achievement"><h3>${escapeHTML(x.title)}</h3><p>${escapeHTML([x.subject,x.grade,x.stage,x.result,x.year].filter(Boolean).join(" · "))}</p>${item.photo ? `<img class="certificate" src="${escapeHTML(item.photo)}" alt="Фото грамоты: ${escapeHTML(x.title)}">` : ""}</article>`;
   }).join("");
   const projects = data.projects.map(x => `<article><h3>${escapeHTML(x.title)}</h3><p>${escapeHTML(x.description || "")}</p></article>`).join("");
   return `<!doctype html><html lang="ru"><head><meta charset="utf-8"><title>Портфолио</title><style>
@@ -654,7 +654,7 @@ function drawAchievements() {
     return `<article class="content-card">
       <h3>${escapeHTML(x.title)}</h3>
       <p>${escapeHTML([x.subject,x.grade,x.stage,x.result,x.year].filter(Boolean).join(" · "))}</p>
-      ${item.photo ? `<img class="certificate-preview" src="${item.photo}" alt="Фото грамоты">` : '<p class="muted small">Фото грамоты не приложено.</p>'}
+      ${item.photo ? `<img class="certificate-preview" src="${escapeHTML(item.photo)}" alt="Фото грамоты">` : '<p class="muted small">Фото грамоты не приложено.</p>'}
       <button class="danger-button" data-achievement-delete="${escapeHTML(item.id || "")}">Удалить</button>
     </article>`;
   }).join("") : `<p class="empty-state">Достижений пока нет.</p>`;
@@ -712,7 +712,9 @@ function renderAdmission() {
   const key = "navigator_universities_v1";
   let universities = readStorage(key, []);
   if (!Array.isArray(universities)) universities = [];
+  const hadLegacyNames = universities.some(item => typeof item === "string");
   universities = universities.map(item => typeof item === "string" ? { id: createId(), name: item, city: "", country: "", direction: "", level: "Не указан", exams: "", deadline: "", source: "", status: "Интересует" } : item);
+  if (hadLegacyNames) { try { localStorage.setItem(key, JSON.stringify(universities)); } catch { /* Старые названия остаются доступными в памяти текущего сеанса. */ } }
   app.innerHTML = `<section class="page">${pageHeader("admission")}
     <div class="notice">Требования, экзамены, сроки и проходные баллы меняются. Вноси их только после проверки официального сайта учебного заведения и указывай год приёма.</div>
     <div class="form-card"><h2>Добавить учебное заведение</h2>
@@ -775,7 +777,7 @@ function addSectionStepper() {
   const previous = index > 0 ? order[index - 1] : "home";
   const next = index < order.length - 1 ? order[index + 1] : "home";
   app.insertAdjacentHTML("beforeend", `<nav class="section-stepper" aria-label="Переход между разделами">
-    <button type="button" data-page="${previous}" ${index === 0 ? "disabled" : ""}>← Назад</button>
+    <button type="button" data-page="${previous}" >← Назад</button>
     <span class="step-caption">Раздел ${index + 1} из ${order.length}<br>${escapeHTML(pages[currentPage].title)}</span>
     <button type="button" data-page="${next}">${index === order.length - 1 ? "На главную" : "Далее →"}</button>
   </nav>`);
