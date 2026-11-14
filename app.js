@@ -345,7 +345,7 @@ function renderProfessions() {
     const query = event.target.value.toLowerCase();
 
     drawProfessions(professions.filter(item =>
-      `${item.name} ${item.field} ${item.description}`.toLowerCase().includes(query)
+      `${item.name} ${item.field} ${item.description} ${item.skills}`.toLowerCase().includes(query)
     ));
   });
 }
@@ -562,7 +562,7 @@ function renderPortfolio() {
       <div class="form-group"><label for="profile-city">Город</label><input id="profile-city" maxlength="100" value="${escapeHTML(profile.city)}"></div>
       <div class="form-group"><label for="profile-interests">Интересующие направления</label><textarea id="profile-interests" maxlength="500">${escapeHTML(profile.interests)}</textarea></div>
       <div class="form-group"><label for="profile-skills">Навыки и дисциплины</label><textarea id="profile-skills" maxlength="500">${escapeHTML(profile.skills)}</textarea></div>
-      <button class="primary-button" id="profile-save">Сохранить анкету и грамоты</button>
+      <button class="primary-button" id="profile-save">Сохранить анкету</button>
     </div>
     <div class="form-card">
       <h2>Добавить проект</h2>
