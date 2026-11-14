@@ -584,10 +584,10 @@ function renderPortfolio() {
     </div>
     <div class="form-card">
       <h2>Экспорт портфолио</h2>
-      <p class="muted small">Скачай оформленное портфолио в PDF для отправки и печати или в редактируемом формате Word (.docx). В документ попадут анкета, проекты, достижения и добавленные фотографии грамот. JSON — отдельная техническая резервная копия.</p>
+      <p class="muted small">Скачай оформленное портфолио в редактируемом формате Word (.docx) или подготовь PDF. Для PDF откроется окно печати браузера — выбери «Сохранить как PDF». В документ попадут анкета, проекты, достижения и фотографии грамот. JSON — отдельная техническая резервная копия.</p>
       <div class="export-actions">
         <button class="primary-button" id="portfolio-word">Скачать Word (.docx)</button>
-        <button class="secondary-button" id="portfolio-pdf">Скачать PDF</button>
+        <button class="secondary-button" id="portfolio-pdf">Подготовить PDF</button>
         <button class="secondary-button" id="portfolio-text">Скачать текст портфолио (TXT)</button>
         <button class="secondary-button" id="export-data">Скачать техническую резервную копию (JSON)</button>
       </div>
