@@ -17,7 +17,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <script src="app.js?v=9" defer></script>
+  <script src="app.js?v=10" defer></script>
 </head>
 <body>
   <header class="header">
@@ -50,11 +50,13 @@
         <p>Исследуй профессии, пробуй себя в разных направлениях, развивай навыки и создавай портфолио.</p>
         <button class="primary-button" data-page="orientation">Начать профориентацию →</button>
       </div>
-      <div class="hero-art" aria-hidden="true">
-        <div class="hero-circle">Н</div>
-        <div class="orbit orbit-a"></div>
-        <div class="orbit orbit-b"></div>
-      </div>
+      <aside class="hero-summary" aria-label="О платформе">
+        <span class="hero-summary-label">ТВОЯ ТРАЕКТОРИЯ</span>
+        <strong>8 направлений</strong>
+        <span>От первого знакомства с профессиями до подготовки к поступлению.</span>
+        <div class="hero-summary-rule"></div>
+        <span class="hero-summary-foot">Исследуй · Практикуйся · Планируй</span>
+      </aside>
     </section>
 
     <section class="home-section">
@@ -65,14 +67,14 @@
       </div>
 
       <div class="feature-grid">
-        <button class="feature-card" data-page="orientation"><span class="feature-number">01</span><span class="feature-icon">◎</span><strong>Профориентация</strong><span>Тесты и определение интересующих направлений.</span></button>
-        <button class="feature-card" data-page="professions"><span class="feature-number">02</span><span class="feature-icon">◇</span><strong>Мир профессий</strong><span>Знакомство с профессиями и их задачами.</span></button>
-        <button class="feature-card" data-page="practice"><span class="feature-number">03</span><span class="feature-icon">⌘</span><strong>Практика и проекты</strong><span>Задания и создание собственных проектов.</span></button>
-        <button class="feature-card" data-page="education"><span class="feature-number">04</span><span class="feature-icon">▤</span><strong>Образование</strong><span>Учебные направления и курсы.</span></button>
-        <button class="feature-card" data-page="route"><span class="feature-number">05</span><span class="feature-icon">⌁</span><strong>Мой маршрут</strong><span>Личные цели и план развития.</span></button>
-        <button class="feature-card" data-page="portfolio"><span class="feature-number">06</span><span class="feature-icon">▣</span><strong>Портфолио</strong><span>Проекты, достижения и навыки.</span></button>
-        <button class="feature-card" data-page="opportunities"><span class="feature-number">07</span><span class="feature-icon">✳</span><strong>Возможности</strong><span>Олимпиады, конкурсы и мероприятия.</span></button>
-        <button class="feature-card" data-page="admission"><span class="feature-number">08</span><span class="feature-icon">↗</span><strong>Поступление</strong><span>Вузы, специальности и подготовка.</span></button>
+        <button class="feature-card" data-page="orientation"><span class="feature-number">01</span><span class="feature-index">01</span><strong>Профориентация</strong><span>Тесты и определение интересующих направлений.</span></button>
+        <button class="feature-card" data-page="professions"><span class="feature-number">02</span><span class="feature-index">02</span><strong>Мир профессий</strong><span>Знакомство с профессиями и их задачами.</span></button>
+        <button class="feature-card" data-page="practice"><span class="feature-number">03</span><span class="feature-index">03</span><strong>Практика и проекты</strong><span>Задания и создание собственных проектов.</span></button>
+        <button class="feature-card" data-page="education"><span class="feature-number">04</span><span class="feature-index">04</span><strong>Образование</strong><span>Учебные направления и курсы.</span></button>
+        <button class="feature-card" data-page="route"><span class="feature-number">05</span><span class="feature-index">05</span><strong>Мой маршрут</strong><span>Личные цели и план развития.</span></button>
+        <button class="feature-card" data-page="portfolio"><span class="feature-number">06</span><span class="feature-index">06</span><strong>Портфолио</strong><span>Проекты, достижения и навыки.</span></button>
+        <button class="feature-card" data-page="opportunities"><span class="feature-number">07</span><span class="feature-index">07</span><strong>Возможности</strong><span>Олимпиады, конкурсы и мероприятия.</span></button>
+        <button class="feature-card" data-page="admission"><span class="feature-number">08</span><span class="feature-index">08</span><strong>Поступление</strong><span>Вузы, специальности и подготовка.</span></button>
       </div>
     </section>
   </main>
