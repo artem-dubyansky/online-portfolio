@@ -19,7 +19,10 @@ function loadData() {
     return {
       ...structuredClone(defaultData),
       ...saved,
-      profile: { ...defaultData.profile, ...(saved.profile || {}) }
+      profile: { ...defaultData.profile, ...(saved.profile || {}) },
+      projects: Array.isArray(saved.projects) ? saved.projects : [],
+      achievements: Array.isArray(saved.achievements) ? saved.achievements : [],
+      route: Array.isArray(saved.route) ? saved.route : []
     };
   } catch {
     return structuredClone(defaultData);
@@ -86,7 +89,57 @@ const professions = [
   { name: "Дизайнер интерфейсов", field: "Дизайн и IT", description: "Проектирует удобные цифровые продукты.", skills: "Дизайн, исследование пользователей, логика" },
   { name: "Эколог", field: "Наука", description: "Изучает окружающую среду и способы её сохранения.", skills: "Биология, география, анализ данных" },
   { name: "Предприниматель", field: "Бизнес", description: "Создаёт и развивает продукты и организации.", skills: "Планирование, коммуникация, экономика" },
-  { name: "Робототехник", field: "Инженерия и IT", description: "Разрабатывает робототехнические системы.", skills: "Программирование, физика, электроника" }
+  { name: "Робототехник", field: "Инженерия и IT", description: "Разрабатывает робототехнические системы.", skills: "Программирование, физика, электроника" },
+  { name: "Инженер-строитель", field: "Строительство", description: "Проектирует и контролирует строительство зданий и сооружений.", skills: "Математика, физика, черчение, расчёты" },
+  { name: "Инженер-электроник", field: "Электроника", description: "Разрабатывает электронные устройства и схемы.", skills: "Физика, схемотехника, программирование" },
+  { name: "Инженер-энергетик", field: "Энергетика", description: "Проектирует системы производства и распределения энергии.", skills: "Физика, математика, электротехника" },
+  { name: "Авиаконструктор", field: "Авиация", description: "Разрабатывает конструкции самолётов и летательных аппаратов.", skills: "Физика, математика, 3D-моделирование" },
+  { name: "Инженер-робототехник", field: "Робототехника", description: "Создаёт роботов и системы автоматического управления.", skills: "Математика, физика, электроника, код" },
+  { name: "Специалист по мехатронике", field: "Инженерия", description: "Объединяет механику, электронику и программное управление.", skills: "Физика, математика, автоматика" },
+  { name: "Разработчик игр", field: "IT", description: "Создаёт игровые механики, системы и интерактивные миры.", skills: "Программирование, математика, командная работа" },
+  { name: "Веб-разработчик", field: "IT", description: "Создаёт сайты и веб-приложения.", skills: "HTML, CSS, JavaScript, логика" },
+  { name: "Разработчик мобильных приложений", field: "IT", description: "Создаёт приложения для смартфонов и планшетов.", skills: "Программирование, UX, тестирование" },
+  { name: "Специалист по кибербезопасности", field: "IT", description: "Помогает защищать информационные системы и данные.", skills: "Сети, операционные системы, программирование" },
+  { name: "Аналитик данных", field: "IT и аналитика", description: "Изучает данные и находит закономерности для принятия решений.", skills: "Математика, статистика, SQL, визуализация" },
+  { name: "Специалист по искусственному интеллекту", field: "IT и наука", description: "Разрабатывает и исследует системы машинного обучения.", skills: "Математика, Python, статистика" },
+  { name: "Системный аналитик", field: "IT", description: "Описывает требования и проектирует взаимодействие частей системы.", skills: "Логика, моделирование процессов, коммуникация" },
+  { name: "Тестировщик программного обеспечения", field: "IT", description: "Проверяет программы и помогает находить ошибки.", skills: "Внимательность, логика, основы программирования" },
+  { name: "Администратор баз данных", field: "IT", description: "Организует хранение, доступность и защиту данных.", skills: "SQL, базы данных, системное мышление" },
+  { name: "Геолог", field: "Наука", description: "Изучает строение Земли, горные породы и природные ресурсы.", skills: "География, химия, физика, наблюдательность" },
+  { name: "Астроном", field: "Наука", description: "Исследует небесные объекты и процессы во Вселенной.", skills: "Физика, математика, анализ данных" },
+  { name: "Физик-исследователь", field: "Наука", description: "Изучает физические явления и проверяет научные гипотезы.", skills: "Математика, физика, эксперимент" },
+  { name: "Химик-технолог", field: "Наука и производство", description: "Разрабатывает и улучшает химические производственные процессы.", skills: "Химия, математика, лабораторные методы" },
+  { name: "Микробиолог", field: "Наука и медицина", description: "Изучает микроорганизмы и их свойства.", skills: "Биология, химия, аккуратность" },
+  { name: "Генетик", field: "Наука и медицина", description: "Исследует наследственность и работу генов.", skills: "Биология, химия, статистика" },
+  { name: "Нейробиолог", field: "Наука и медицина", description: "Изучает нервную систему и работу мозга.", skills: "Биология, химия, математика" },
+  { name: "Ветеринарный врач", field: "Медицина", description: "Занимается здоровьем и лечением животных.", skills: "Биология, химия, наблюдательность" },
+  { name: "Фармацевт", field: "Медицина", description: "Работает с лекарственными средствами и правилами их применения.", skills: "Химия, биология, точность" },
+  { name: "Стоматолог", field: "Медицина", description: "Диагностирует и лечит заболевания зубов и полости рта.", skills: "Биология, химия, точность, коммуникация" },
+  { name: "Психолог", field: "Социальные науки", description: "Изучает поведение и помогает людям решать психологические задачи.", skills: "Психология, коммуникация, анализ" },
+  { name: "Учитель", field: "Образование", description: "Объясняет учебный материал и помогает ученикам развивать знания.", skills: "Знание предмета, коммуникация, организация" },
+  { name: "Преподаватель университета", field: "Образование и наука", description: "Преподаёт дисциплины и участвует в научной работе.", skills: "Профильная наука, исследования, публичные выступления" },
+  { name: "Юрист", field: "Право", description: "Работает с законами, документами и правовыми вопросами.", skills: "Обществознание, логика, работа с текстами" },
+  { name: "Журналист", field: "Медиа", description: "Находит информацию, проверяет факты и готовит материалы для аудитории.", skills: "Русский язык, исследование, коммуникация" },
+  { name: "Переводчик", field: "Языки", description: "Передаёт смысл устной и письменной речи на другом языке.", skills: "Иностранные языки, грамотность, культурный кругозор" },
+  { name: "Архитектор городской среды", field: "Архитектура", description: "Проектирует общественные пространства и городскую инфраструктуру.", skills: "Геометрия, дизайн, черчение, экология" },
+  { name: "Графический дизайнер", field: "Дизайн", description: "Создаёт визуальные материалы для брендов и коммуникаций.", skills: "Композиция, типографика, графические редакторы" },
+  { name: "Промышленный дизайнер", field: "Дизайн и инженерия", description: "Проектирует внешний вид и удобство физических продуктов.", skills: "Рисунок, 3D-моделирование, эргономика" },
+  { name: "Аниматор", field: "Медиа и дизайн", description: "Создаёт движение и визуальные истории для видео и игр.", skills: "Рисунок, композиция, основы анимации" },
+  { name: "Фотограф", field: "Медиа", description: "Создаёт фотографии для художественных, информационных и коммерческих задач.", skills: "Композиция, свет, визуальное мышление" },
+  { name: "Продюсер", field: "Медиа и бизнес", description: "Организует создание и выпуск творческих или медиапроектов.", skills: "Планирование, бюджетирование, коммуникация" },
+  { name: "Маркетолог", field: "Бизнес", description: "Изучает аудиторию и помогает продвигать продукты и услуги.", skills: "Аналитика, коммуникация, экономика" },
+  { name: "Финансовый аналитик", field: "Финансы", description: "Анализирует финансовые показатели и оценивает экономические решения.", skills: "Математика, статистика, экономика" },
+  { name: "Менеджер проектов", field: "Управление", description: "Планирует работу команды, сроки, задачи и ресурсы проекта.", skills: "Организация, коммуникация, аналитика" },
+  { name: "Логист", field: "Бизнес и транспорт", description: "Планирует перемещение товаров и управление поставками.", skills: "Математика, аналитика, планирование" },
+  { name: "Специалист по персоналу", field: "Управление", description: "Помогает организациям находить и развивать сотрудников.", skills: "Коммуникация, психология, организация" },
+  { name: "Предприниматель в технологиях", field: "Бизнес и технологии", description: "Создаёт компании и продукты на основе новых технологий.", skills: "Планирование, экономика, командная работа" },
+  { name: "Агроном", field: "Сельское хозяйство", description: "Разрабатывает подходы к выращиванию сельскохозяйственных культур.", skills: "Биология, химия, экология" },
+  { name: "Специалист по климату", field: "Наука и экология", description: "Исследует климатические процессы и изменения окружающей среды.", skills: "География, физика, математика, анализ данных" },
+  { name: "Гидролог", field: "Наука и экология", description: "Изучает водные ресурсы и движение воды в природе.", skills: "География, физика, математика" },
+  { name: "Специалист по беспилотным системам", field: "Инженерия и IT", description: "Проектирует и исследует гражданские беспилотные системы.", skills: "Программирование, электроника, физика" },
+  { name: "Инженер по автоматизации", field: "Промышленность", description: "Создаёт системы автоматического управления оборудованием.", skills: "Физика, программирование, электроника" },
+  { name: "Специалист по качеству", field: "Промышленность", description: "Проверяет соответствие продукции установленным требованиям.", skills: "Аналитика, точность, технические стандарты" },
+  { name: "Специалист по устойчивому развитию", field: "Экология и бизнес", description: "Помогает организациям учитывать экологические и социальные последствия решений.", skills: "Экология, аналитика, экономика" }
 ];
 
 const quiz = [
@@ -351,7 +404,24 @@ function renderPractice() {
           <button class="secondary-button" data-add-route="${escapeHTML(field)}">Добавить в маршрут</button>
         </article>`).join("")}
     </div>
+    <div class="form-card">
+      <h2>Мой практический результат</h2>
+      <p class="muted">Опиши выполненное задание или собственную разработку. Запись появится в разделе «Портфолио».</p>
+      <div class="form-group"><label for="practice-project-title">Название проекта</label><input id="practice-project-title" maxlength="100" placeholder="Например: макет умного дома"></div>
+      <div class="form-group"><label for="practice-project-description">Что сделал и какой результат получил</label><textarea id="practice-project-description" maxlength="1500" placeholder="Опиши идею, свою работу, использованные навыки и результат"></textarea></div>
+      <button class="primary-button" id="practice-project-save">Сохранить в портфолио</button>
+    </div>
   </section>`;
+  document.getElementById("practice-project-save").addEventListener("click", () => {
+    const title = document.getElementById("practice-project-title").value.trim();
+    const description = document.getElementById("practice-project-description").value.trim();
+    if (!title) return alert("Укажи название проекта.");
+    data.projects.push({ id: createId(), title, description });
+    if (!saveData()) { data.projects.pop(); return; }
+    document.getElementById("practice-project-title").value = "";
+    document.getElementById("practice-project-description").value = "";
+    alert("Проект сохранён в портфолио.");
+  });
 }
 
 function renderEducation() {
@@ -514,9 +584,9 @@ function renderPortfolio() {
     </div>
     <div class="form-card">
       <h2>Экспорт портфолио</h2>
-      <p class="muted small">Word — редактируемый документ. PDF — откроется окно печати, где можно выбрать «Сохранить как PDF». TXT — простой читаемый текст. JSON оставлен только для резервной копии и восстановления.</p>
+      <p class="muted small">Для Word скачивается HTML-документ, который открывается в Microsoft Word и затем сохраняется как DOCX через «Файл → Сохранить как». PDF создаётся через окно печати браузера. TXT — простой текст. JSON — только резервная копия.</p>
       <div class="export-actions">
-        <button class="primary-button" id="portfolio-word">Открыть официальный бланк с фото (Word)</button>
+        <button class="primary-button" id="portfolio-word">Скачать документ для Word (HTML)</button>
         <button class="secondary-button" id="portfolio-pdf">Открыть официальный бланк с фото (PDF / печать)</button>
         <button class="secondary-button" id="portfolio-text">Скачать текст портфолио (TXT)</button>
         <button class="secondary-button" id="export-data">Скачать техническую резервную копию (JSON)</button>
@@ -626,12 +696,15 @@ function buildPortfolioHTML() {
     return `<article class="achievement"><h3>${escapeHTML(x.title)}</h3><p>${escapeHTML([x.subject,x.grade,x.stage,x.result,x.year].filter(Boolean).join(" · "))}</p>${item.photo ? `<img class="certificate" src="${escapeHTML(item.photo)}" alt="Фото грамоты: ${escapeHTML(x.title)}">` : ""}</article>`;
   }).join("");
   const projects = data.projects.map(x => `<article><h3>${escapeHTML(x.title)}</h3><p>${escapeHTML(x.description || "")}</p></article>`).join("");
-  return `<!doctype html><html lang="ru"><head><meta charset="utf-8"><title>Портфолио</title><style>
-    body{font:14px Arial,sans-serif;color:#111;max-width:850px;margin:35px auto;line-height:1.5}
-    h1{font-size:26px;border-bottom:2px solid #333;padding-bottom:10px}h2{font-size:19px;margin-top:28px;border-bottom:1px solid #aaa;padding-bottom:5px}
-    h3{font-size:15px;margin-bottom:4px}.muted{color:#555}.achievement,article{break-inside:avoid;margin:12px 0;padding:10px;border:1px solid #ddd}
-    .certificate{display:block;max-width:100%;max-height:650px;object-fit:contain;margin:10px auto}
-    @media print{body{margin:12mm;max-width:none}.certificate{max-height:230mm}}
+  return `<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Портфолио ученика</title><style>
+    body{font-family:Arial,Helvetica,sans-serif;font-size:11pt;color:#202020;max-width:190mm;margin:18mm auto;line-height:1.45}
+    h1{font-size:22pt;font-weight:700;margin:0 0 16pt;padding:0 0 8pt;border-bottom:2px solid #244f86}
+    h2{font-size:15pt;font-weight:700;margin:22pt 0 8pt;padding:0 0 5pt;border-bottom:1px solid #aab4c0;page-break-after:avoid}
+    h3{font-size:12pt;font-weight:700;margin:10pt 0 4pt;page-break-after:avoid}
+    p{margin:4pt 0}.muted{color:#555}.achievement,article{margin:10pt 0;padding:0 0 8pt;border:0;border-bottom:1px solid #d7dce2;page-break-inside:avoid}
+    .certificate{display:block;width:auto;max-width:100%;height:auto;max-height:220mm;object-fit:contain;margin:10pt auto;page-break-inside:avoid}
+    @page{size:A4;margin:16mm}
+    @media print{body{max-width:none;margin:0}.certificate{max-height:220mm}}
   </style></head><body><h1>Портфолио ученика</h1>
     <p><strong>ФИО:</strong> ${escapeHTML(p.name || "Не заполнено")}</p><p><strong>Класс:</strong> ${escapeHTML(p.grade || "Не заполнено")}</p>
     <p><strong>Школа:</strong> ${escapeHTML(p.school || "Не заполнено")}</p><p><strong>Город:</strong> ${escapeHTML(p.city || "Не заполнено")}</p>
@@ -650,14 +723,30 @@ function downloadBlob(content, type, filename) {
 }
 
 function exportPortfolioWord() {
-  downloadBlob("\ufeff" + buildPortfolioHTML(), "application/msword;charset=utf-8", "portfolio-navigator-future.doc");
+  downloadBlob("\\ufeff" + buildPortfolioHTML(), "text/html;charset=utf-8", "portfolio-navigator-future.html");
 }
 
 function printPortfolio() {
   const popup = window.open("", "_blank");
   if (!popup) return alert("Браузер заблокировал новое окно. Разреши всплывающие окна для печати портфолио.");
-  popup.onload = () => popup.print();
-  popup.document.open(); popup.document.write(buildPortfolioHTML()); popup.document.close();
+  popup.document.open();
+  popup.document.write(buildPortfolioHTML());
+  popup.document.close();
+  const printWhenReady = async () => {
+    try {
+      if (popup.document.fonts?.ready) await popup.document.fonts.ready;
+      await Promise.all(Array.from(popup.document.images).map(image => image.complete ? Promise.resolve() : new Promise(resolve => {
+        image.addEventListener("load", resolve, { once: true });
+        image.addEventListener("error", resolve, { once: true });
+      })));
+    } catch (error) {
+      console.warn("Не удалось дождаться загрузки элементов документа:", error);
+    }
+    popup.focus();
+    popup.print();
+  };
+  if (popup.document.readyState === "complete") printWhenReady();
+  else popup.addEventListener("load", printWhenReady, { once: true });
 }
 
 function exportPortfolioText() {
