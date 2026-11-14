@@ -699,7 +699,7 @@ function downloadBlob(content, type, filename) {
 function exportPortfolioWord() {
   // HTML-файл открывается в Microsoft Word без маскировки под неподдерживаемый .doc.
   // В Word ученик может выбрать «Файл → Сохранить как → Документ Word (.docx)».
-  downloadBlob("\\ufeff" + buildPortfolioHTML(), "text/html;charset=utf-8", "portfolio-navigator-future.html");
+  downloadBlob("\ufeff" + buildPortfolioHTML(), "text/html;charset=utf-8", "portfolio-navigator-future.html");
 }
 
 function printPortfolio() {
@@ -710,7 +710,10 @@ function printPortfolio() {
   popup.document.write(html);
   popup.document.close();
 
+  let printStarted = false;
   const printWhenReady = async () => {
+    if (printStarted) return;
+    printStarted = true;
     try {
       if (popup.document.fonts && popup.document.fonts.ready) await popup.document.fonts.ready;
       const images = Array.from(popup.document.images);
