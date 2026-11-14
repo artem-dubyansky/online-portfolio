@@ -177,9 +177,13 @@ function renderHome() {
         <p>Исследуй профессии, пробуй себя в разных направлениях, развивай навыки и создавай портфолио.</p>
         <button class="primary-button" data-page="orientation">Начать профориентацию →</button>
       </div>
-      <div class="hero-art" aria-hidden="true">
-        <div class="hero-circle">Н</div><div class="orbit orbit-a"></div><div class="orbit orbit-b"></div>
-      </div>
+      <aside class="hero-summary" aria-label="О платформе">
+        <span class="hero-summary-label">ТВОЯ ТРАЕКТОРИЯ</span>
+        <strong>8 направлений</strong>
+        <span>От первого знакомства с профессиями до подготовки к поступлению.</span>
+        <div class="hero-summary-rule"></div>
+        <span class="hero-summary-foot">Исследуй · Практикуйся · Планируй</span>
+      </aside>
     </section>
     <section class="home-section">
       <div class="section-heading">
@@ -191,7 +195,7 @@ function renderHome() {
         ${Object.entries(pages).map(([id, page], index) => `
           <button class="feature-card" data-page="${id}">
             <span class="feature-number">${String(index + 1).padStart(2, "0")}</span>
-            <span class="feature-icon">${["◎","◇","⌘","▤","⌁","▣","✳","↗"][index]}</span>
+            <span class="feature-index">${String(index + 1).padStart(2, "0")}</span>
             <strong>${page.title}</strong>
             <span>${page.description}</span>
           </button>`).join("")}
