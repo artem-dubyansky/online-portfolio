@@ -740,10 +740,17 @@ function loadDocxLibrary() {
     const script = document.createElement("script");
     script.src = "https://cdn.jsdelivr.net/npm/docx@9.15.3/dist/index.iife.js";
     script.async = true;
-    script.onload = () => window.docx && window.docx.Document && window.docx.Packer
-      ? resolve(window.docx)
-      : reject(new Error("Библиотека Word загрузилась некорректно."));
-    script.onerror = () => reject(new Error("Не удалось загрузить модуль создания Word. Проверь подключение к интернету и попробуй ещё раз."));
+    script.onload = () => {
+      if (window.docx && window.docx.Document && window.docx.Packer) resolve(window.docx);
+      else {
+        window.__navigatorDocxPromise = null;
+        reject(new Error("Библиотека Word загрузилась некорректно. Обнови страницу и попробуй ещё раз."));
+      }
+    };
+    script.onerror = () => {
+      window.__navigatorDocxPromise = null;
+      reject(new Error("Не удалось загрузить модуль создания Word. Проверь подключение к интернету и попробуй ещё раз."));
+    };
     document.head.appendChild(script);
   });
   return window.__navigatorDocxPromise;
