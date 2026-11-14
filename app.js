@@ -584,10 +584,10 @@ function renderPortfolio() {
     </div>
     <div class="form-card">
       <h2>Экспорт портфолио</h2>
-      <p class="muted small">Для Word скачивается HTML-документ, который открывается в Microsoft Word и затем сохраняется как DOCX через «Файл → Сохранить как». PDF создаётся через окно печати браузера. TXT — простой текст. JSON — только резервная копия.</p>
+      <p class="muted small">Скачай оформленное портфолио в PDF для отправки и печати или в редактируемом формате Word (.docx). В документ попадут анкета, проекты, достижения и добавленные фотографии грамот. JSON — отдельная техническая резервная копия.</p>
       <div class="export-actions">
-        <button class="primary-button" id="portfolio-word">Скачать документ для Word (HTML)</button>
-        <button class="secondary-button" id="portfolio-pdf">Открыть официальный бланк с фото (PDF / печать)</button>
+        <button class="primary-button" id="portfolio-word">Скачать Word (.docx)</button>
+        <button class="secondary-button" id="portfolio-pdf">Скачать PDF</button>
         <button class="secondary-button" id="portfolio-text">Скачать текст портфолио (TXT)</button>
         <button class="secondary-button" id="export-data">Скачать техническую резервную копию (JSON)</button>
       </div>
@@ -691,50 +691,206 @@ function getAchievementDetails(item) {
 
 function buildPortfolioHTML() {
   const p = data.profile || {};
-  const achievements = data.achievements.map(item => {
+  const field = (label, value, fallback) =>
+    '<p class="profile-field"><strong>' + escapeHTML(label) + ':</strong> ' + escapeHTML(value || fallback || "Не заполнено") + '</p>';
+  const projects = data.projects.map((item, i) =>
+    '<article class="project-item"><h3>' + (i + 1) + '. ' + escapeHTML(item.title || "Проект") + '</h3><p>' +
+    escapeHTML(item.description || "Описание не добавлено.") + '</p></article>'
+  ).join("");
+  const achievements = data.achievements.map((item, i) => {
     const x = getAchievementDetails(item);
-    return `<article class="achievement"><h3>${escapeHTML(x.title)}</h3><p>${escapeHTML([x.subject,x.grade,x.stage,x.result,x.year].filter(Boolean).join(" · "))}</p>${item.photo ? `<img class="certificate" src="${escapeHTML(item.photo)}" alt="Фото грамоты: ${escapeHTML(x.title)}">` : ""}</article>`;
+    return '<article class="achievement-item"><h3>' + (i + 1) + '. ' + escapeHTML(x.title) + '</h3><p class="meta">' +
+      escapeHTML([x.subject, x.grade, x.stage, x.result, x.year].filter(Boolean).join(" · ")) + '</p>' +
+      (item.photo ? '<img class="certificate" src="' + escapeHTML(item.photo) + '" alt="Грамота или сертификат: ' + escapeHTML(x.title) + '">' : '') +
+      '</article>';
   }).join("");
-  const projects = data.projects.map(x => `<article><h3>${escapeHTML(x.title)}</h3><p>${escapeHTML(x.description || "")}</p></article>`).join("");
-  return `<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Портфолио ученика</title><style>
-    body{font-family:Arial,Helvetica,sans-serif;font-size:11pt;color:#202020;max-width:190mm;margin:18mm auto;line-height:1.45}
-    h1{font-size:22pt;font-weight:700;margin:0 0 16pt;padding:0 0 8pt;border-bottom:2px solid #244f86}
-    h2{font-size:15pt;font-weight:700;margin:22pt 0 8pt;padding:0 0 5pt;border-bottom:1px solid #aab4c0;page-break-after:avoid}
-    h3{font-size:12pt;font-weight:700;margin:10pt 0 4pt;page-break-after:avoid}
-    p{margin:4pt 0}.muted{color:#555}.achievement,article{margin:10pt 0;padding:0 0 8pt;border:0;border-bottom:1px solid #d7dce2;page-break-inside:avoid}
-    .certificate{display:block;width:auto;max-width:100%;height:auto;max-height:220mm;object-fit:contain;margin:10pt auto;page-break-inside:avoid}
-    @page{size:A4;margin:16mm}
-    @media print{body{max-width:none;margin:0}.certificate{max-height:220mm}}
-  </style></head><body><h1>Портфолио ученика</h1>
-    <p><strong>ФИО:</strong> ${escapeHTML(p.name || "Не заполнено")}</p><p><strong>Класс:</strong> ${escapeHTML(p.grade || "Не заполнено")}</p>
-    <p><strong>Школа:</strong> ${escapeHTML(p.school || "Не заполнено")}</p><p><strong>Город:</strong> ${escapeHTML(p.city || "Не заполнено")}</p>
-    <p><strong>Интересы:</strong> ${escapeHTML(p.interests || "Не указаны")}</p><p><strong>Навыки:</strong> ${escapeHTML(p.skills || "Не указаны")}</p>
-    <h2>Проекты</h2>${projects || "<p>Проекты не добавлены.</p>"}
-    <h2>Олимпиады, конкурсы и достижения</h2>${achievements || "<p>Достижения не добавлены.</p>"}
-    <p class="muted">Сформировано в «Навигаторе будущего» · ${new Date().toLocaleDateString("ru-RU")}</p></body></html>`;
+
+  return '<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
+  '<title>Портфолио ученика</title><style>' +
+  '*{box-sizing:border-box}body{font-family:Arial,"Segoe UI",sans-serif;font-size:11pt;line-height:1.55;color:#202a38;max-width:178mm;margin:0 auto}' +
+  '.cover{min-height:245mm;display:flex;flex-direction:column;justify-content:center;page-break-after:always;padding:18mm 10mm}' +
+  '.brand{font-size:10pt;letter-spacing:2px;text-transform:uppercase;color:#2457a6;font-weight:bold;margin-bottom:28mm}' +
+  'h1{font-size:29pt;line-height:1.15;color:#1d2938;margin:0 0 12mm;border-bottom:4px solid #2457a6;padding-bottom:8mm}' +
+  '.cover-subtitle{font-size:15pt;color:#687586;margin-bottom:18mm}.cover-name{font-size:20pt;font-weight:bold;color:#2457a6;margin-bottom:5mm}.cover-meta{font-size:11pt;color:#687586}' +
+  'h2{font-size:17pt;color:#2457a6;margin:17mm 0 7mm;padding-bottom:3mm;border-bottom:1.5px solid #cbd8e9;page-break-after:avoid}' +
+  'h3{font-size:12pt;color:#1d2938;margin:8mm 0 2mm;page-break-after:avoid}p{margin:2mm 0 4mm}.profile-field{padding:2mm 0;border-bottom:1px solid #e8edf3}' +
+  '.project-item,.achievement-item{margin:5mm 0 8mm;padding-bottom:4mm;border-bottom:1px solid #e1e7ef;break-inside:avoid;page-break-inside:avoid}' +
+  '.meta{color:#687586;font-size:10pt}.certificate{display:block;max-width:100%;width:auto;height:auto;max-height:145mm;object-fit:contain;margin:5mm auto 2mm;break-inside:avoid;page-break-inside:avoid}' +
+  '.empty{color:#687586;font-style:italic}.generated{margin-top:18mm;padding-top:4mm;border-top:1px solid #dfe5ed;color:#687586;font-size:9pt}' +
+  '@page{size:A4;margin:18mm 16mm}@media print{body{max-width:none}.cover{min-height:255mm}}' +
+  '</style></head><body><section class="cover"><div class="brand">Навигатор будущего · Личное портфолио</div>' +
+  '<h1>Портфолио ученика</h1><div class="cover-subtitle">Образовательные достижения, проекты и развитие навыков</div>' +
+  '<div class="cover-name">' + escapeHTML(p.name || "Имя ученика") + '</div><div class="cover-meta">' +
+  escapeHTML([p.grade, p.school, p.city].filter(Boolean).join(" · ") || "Класс · Учебное заведение · Город") +
+  '</div></section><section><h2>1. Обо мне</h2>' +
+  field("ФИО", p.name) + field("Класс или курс", p.grade) + field("Учебное заведение", p.school) + field("Город", p.city) +
+  field("Интересующие направления", p.interests, "Не указаны") + field("Навыки и дисциплины", p.skills, "Не указаны") +
+  '</section><section><h2>2. Проекты и практические работы</h2>' +
+  (projects || '<p class="empty">Проекты пока не добавлены.</p>') +
+  '</section><section><h2>3. Олимпиады, конкурсы и достижения</h2>' +
+  (achievements || '<p class="empty">Достижения пока не добавлены.</p>') +
+  '</section><p class="generated">Сформировано в образовательной платформе «Навигатор будущего» · ' +
+  new Date().toLocaleDateString("ru-RU") + '</p></body></html>';
 }
 
-function downloadBlob(content, type, filename) {
-  const blob = new Blob([content], { type });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url; link.download = filename; link.click();
-  setTimeout(() => URL.revokeObjectURL(url), 1500);
+function loadDocxLibrary() {
+  if (window.docx && window.docx.Document && window.docx.Packer) return Promise.resolve(window.docx);
+  if (window.__navigatorDocxPromise) return window.__navigatorDocxPromise;
+  window.__navigatorDocxPromise = new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = "https://cdn.jsdelivr.net/npm/docx@9.15.3/dist/index.iife.js";
+    script.async = true;
+    script.onload = () => window.docx && window.docx.Document && window.docx.Packer
+      ? resolve(window.docx)
+      : reject(new Error("Библиотека Word загрузилась некорректно."));
+    script.onerror = () => reject(new Error("Не удалось загрузить модуль создания Word. Проверь подключение к интернету и попробуй ещё раз."));
+    document.head.appendChild(script);
+  });
+  return window.__navigatorDocxPromise;
 }
 
-function exportPortfolioWord() {
-  downloadBlob("\\ufeff" + buildPortfolioHTML(), "text/html;charset=utf-8", "portfolio-navigator-future.html");
+function wordParagraph(docx, text, options = {}) {
+  return new docx.Paragraph({
+    spacing: { after: options.after === undefined ? 150 : options.after },
+    alignment: options.alignment,
+    children: [new docx.TextRun({
+      text: String(text || ""),
+      font: "Arial",
+      size: options.size || 22,
+      bold: Boolean(options.bold),
+      color: options.color || "202A38"
+    })]
+  });
+}
+
+function wordHeading(docx, text, pageBreakBefore = false) {
+  return new docx.Paragraph({
+    pageBreakBefore,
+    spacing: { before: 260, after: 140 },
+    children: [new docx.TextRun({ text, font: "Arial", size: 30, bold: true, color: "2457A6" })]
+  });
+}
+
+function dataUrlToBytes(dataUrl) {
+  const match = /^data:image\/(?:jpeg|png);base64,(.+)$/i.exec(dataUrl || "");
+  if (!match) throw new Error("Неподдерживаемый формат изображения.");
+  const binary = atob(match[1]);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return bytes;
+}
+
+async function createPortfolioDocx() {
+  const docx = await loadDocxLibrary();
+  const p = data.profile || {};
+  const children = [
+    wordParagraph(docx, "НАВИГАТОР БУДУЩЕГО", { size: 20, bold: true, color: "2457A6", alignment: docx.AlignmentType.CENTER, after: 500 }),
+    wordParagraph(docx, "ПОРТФОЛИО УЧЕНИКА", { size: 38, bold: true, color: "1D2938", alignment: docx.AlignmentType.CENTER, after: 280 }),
+    wordParagraph(docx, "Образовательные достижения, проекты и развитие навыков", { size: 22, color: "687586", alignment: docx.AlignmentType.CENTER, after: 900 }),
+    wordParagraph(docx, p.name || "Имя ученика", { size: 30, bold: true, color: "2457A6", alignment: docx.AlignmentType.CENTER, after: 180 }),
+    wordParagraph(docx, [p.grade, p.school, p.city].filter(Boolean).join(" · ") || "Класс · Учебное заведение · Город", { size: 20, color: "687586", alignment: docx.AlignmentType.CENTER, after: 300 }),
+    wordHeading(docx, "1. Обо мне", true)
+  ];
+
+  const profileFields = [
+    ["ФИО", p.name], ["Класс или курс", p.grade], ["Учебное заведение", p.school],
+    ["Город", p.city], ["Интересующие направления", p.interests], ["Навыки и дисциплины", p.skills]
+  ];
+  profileFields.forEach(([label, value]) => {
+    children.push(new docx.Paragraph({
+      spacing: { after: 130 },
+      children: [
+        new docx.TextRun({ text: label + ": ", bold: true, font: "Arial", size: 22, color: "2457A6" }),
+        new docx.TextRun({ text: value || "Не указано", font: "Arial", size: 22, color: "202A38" })
+      ]
+    }));
+  });
+
+  children.push(wordHeading(docx, "2. Проекты и практические работы"));
+  if (!data.projects.length) children.push(wordParagraph(docx, "Проекты пока не добавлены.", { color: "687586" }));
+  data.projects.forEach((item, index) => {
+    children.push(wordParagraph(docx, (index + 1) + ". " + (item.title || "Проект"), { bold: true, color: "1D2938", after: 70 }));
+    children.push(wordParagraph(docx, item.description || "Описание не добавлено.", { after: 220 }));
+  });
+
+  children.push(wordHeading(docx, "3. Олимпиады, конкурсы и достижения"));
+  if (!data.achievements.length) children.push(wordParagraph(docx, "Достижения пока не добавлены.", { color: "687586" }));
+  for (let index = 0; index < data.achievements.length; index++) {
+    const item = data.achievements[index];
+    const x = getAchievementDetails(item);
+    children.push(wordParagraph(docx, (index + 1) + ". " + x.title, { bold: true, color: "1D2938", after: 70 }));
+    children.push(wordParagraph(docx, [x.subject, x.grade, x.stage, x.result, x.year].filter(Boolean).join(" · "), { color: "687586", after: 100 }));
+    if (item.photo) {
+      try {
+        const bytes = dataUrlToBytes(item.photo);
+        const image = new Image();
+        const dimensions = await new Promise((resolve, reject) => {
+          image.onload = () => resolve({ width: image.naturalWidth, height: image.naturalHeight });
+          image.onerror = reject;
+          image.src = item.photo;
+        });
+        const scale = Math.min(1, 500 / dimensions.width, 620 / dimensions.height);
+        children.push(new docx.Paragraph({
+          alignment: docx.AlignmentType.CENTER,
+          spacing: { before: 80, after: 220 },
+          children: [new docx.ImageRun({
+            data: bytes,
+            transformation: {
+              width: Math.max(1, Math.round(dimensions.width * scale)),
+              height: Math.max(1, Math.round(dimensions.height * scale))
+            }
+          })]
+        }));
+      } catch (error) {
+        console.warn("Не удалось добавить изображение достижения в DOCX:", error);
+        children.push(wordParagraph(docx, "Изображение документа не удалось включить в файл.", { color: "687586" }));
+      }
+    }
+  }
+
+  children.push(wordParagraph(docx, "Сформировано в «Навигаторе будущего» · " + new Date().toLocaleDateString("ru-RU"), { size: 18, color: "687586", after: 0 }));
+  const document = new docx.Document({
+    creator: "Навигатор будущего",
+    title: "Портфолио ученика",
+    description: "Личное образовательное портфолио ученика",
+    sections: [{
+      properties: { page: { size: { width: 11906, height: 16838 }, margin: { top: 900, right: 900, bottom: 900, left: 900 } } },
+      children
+    }]
+  });
+  return docx.Packer.toBlob(document);
+}
+
+async function exportPortfolioWord() {
+  const button = document.getElementById("portfolio-word");
+  if (button) { button.disabled = true; button.textContent = "Подготавливаю Word…"; }
+  try {
+    const blob = await createPortfolioDocx();
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "portfolio-navigator-future.docx";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 3000);
+  } catch (error) {
+    console.error("Ошибка экспорта DOCX:", error);
+    alert(error.message || "Не удалось создать документ Word. Попробуй ещё раз.");
+  } finally {
+    if (button) { button.disabled = false; button.textContent = "Скачать Word (.docx)"; }
+  }
 }
 
 function printPortfolio() {
   const popup = window.open("", "_blank");
-  if (!popup) return alert("Браузер заблокировал новое окно. Разреши всплывающие окна для печати портфолио.");
+  if (!popup) return alert("Браузер заблокировал новое окно. Разреши всплывающие окна для сохранения PDF.");
   popup.document.open();
   popup.document.write(buildPortfolioHTML());
   popup.document.close();
   const printWhenReady = async () => {
     try {
-      if (popup.document.fonts?.ready) await popup.document.fonts.ready;
+      if (popup.document.fonts && popup.document.fonts.ready) await popup.document.fonts.ready;
       await Promise.all(Array.from(popup.document.images).map(image => image.complete ? Promise.resolve() : new Promise(resolve => {
         image.addEventListener("load", resolve, { once: true });
         image.addEventListener("error", resolve, { once: true });
