@@ -514,9 +514,9 @@ function renderPortfolio() {
     </div>
     <div class="form-card">
       <h2>Экспорт портфолио</h2>
-      <p class="muted small">Word — редактируемый документ. PDF — откроется окно печати, где можно выбрать «Сохранить как PDF». TXT — простой читаемый текст. JSON оставлен только для резервной копии и восстановления.</p>
+      <p class="muted small">Документ HTML открывается в Word и сохраняет фотографии грамот. В Word его можно сохранить в формате DOCX. PDF — откроется окно печати, где можно выбрать «Сохранить как PDF». TXT — простой текст. JSON — резервная копия.</p>
       <div class="export-actions">
-        <button class="primary-button" id="portfolio-word">Открыть официальный бланк с фото (Word)</button>
+        <button class="primary-button" id="portfolio-word">Скачать документ для Word (HTML)</button>
         <button class="secondary-button" id="portfolio-pdf">Открыть официальный бланк с фото (PDF / печать)</button>
         <button class="secondary-button" id="portfolio-text">Скачать текст портфолио (TXT)</button>
         <button class="secondary-button" id="export-data">Скачать техническую резервную копию (JSON)</button>
@@ -621,43 +621,116 @@ function getAchievementDetails(item) {
 
 function buildPortfolioHTML() {
   const p = data.profile || {};
-  const achievements = data.achievements.map(item => {
+  const achievements = data.achievements.map((item, index) => {
     const x = getAchievementDetails(item);
-    return `<article class="achievement"><h3>${escapeHTML(x.title)}</h3><p>${escapeHTML([x.subject,x.grade,x.stage,x.result,x.year].filter(Boolean).join(" · "))}</p>${item.photo ? `<img class="certificate" src="${escapeHTML(item.photo)}" alt="Фото грамоты: ${escapeHTML(x.title)}">` : ""}</article>`;
+    return `
+      <section class="entry">
+        <h3>${index + 1}. ${escapeHTML(x.title)}</h3>
+        <p class="details">${escapeHTML([x.subject, x.grade, x.stage, x.result, x.year].filter(Boolean).join(" · "))}</p>
+        ${item.photo ? `<div class="certificate-wrap"><img class="certificate" src="${escapeHTML(item.photo)}" alt="Фото грамоты: ${escapeHTML(x.title)}"></div>` : ""}
+      </section>`;
   }).join("");
-  const projects = data.projects.map(x => `<article><h3>${escapeHTML(x.title)}</h3><p>${escapeHTML(x.description || "")}</p></article>`).join("");
-  return `<!doctype html><html lang="ru"><head><meta charset="utf-8"><title>Портфолио</title><style>
-    body{font:14px Arial,sans-serif;color:#111;max-width:850px;margin:35px auto;line-height:1.5}
-    h1{font-size:26px;border-bottom:2px solid #333;padding-bottom:10px}h2{font-size:19px;margin-top:28px;border-bottom:1px solid #aaa;padding-bottom:5px}
-    h3{font-size:15px;margin-bottom:4px}.muted{color:#555}.achievement,article{break-inside:avoid;margin:12px 0;padding:10px;border:1px solid #ddd}
-    .certificate{display:block;max-width:100%;max-height:650px;object-fit:contain;margin:10px auto}
-    @media print{body{margin:12mm;max-width:none}.certificate{max-height:230mm}}
-  </style></head><body><h1>Портфолио ученика</h1>
-    <p><strong>ФИО:</strong> ${escapeHTML(p.name || "Не заполнено")}</p><p><strong>Класс:</strong> ${escapeHTML(p.grade || "Не заполнено")}</p>
-    <p><strong>Школа:</strong> ${escapeHTML(p.school || "Не заполнено")}</p><p><strong>Город:</strong> ${escapeHTML(p.city || "Не заполнено")}</p>
-    <p><strong>Интересы:</strong> ${escapeHTML(p.interests || "Не указаны")}</p><p><strong>Навыки:</strong> ${escapeHTML(p.skills || "Не указаны")}</p>
-    <h2>Проекты</h2>${projects || "<p>Проекты не добавлены.</p>"}
-    <h2>Олимпиады, конкурсы и достижения</h2>${achievements || "<p>Достижения не добавлены.</p>"}
-    <p class="muted">Сформировано в «Навигаторе будущего» · ${new Date().toLocaleDateString("ru-RU")}</p></body></html>`;
+  const projects = data.projects.map((item, index) => `
+    <section class="entry">
+      <h3>${index + 1}. ${escapeHTML(item.title)}</h3>
+      <p>${escapeHTML(item.description || "Описание не добавлено.")}</p>
+    </section>`).join("");
+
+  return `<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Портфолио ученика</title>
+<style>
+  @page { size: A4; margin: 18mm 16mm; }
+  * { box-sizing: border-box; }
+  html, body { background: #fff; color: #202733; }
+  body {
+    margin: 0 auto; padding: 0; max-width: 180mm;
+    font-family: Arial, Helvetica, sans-serif; font-size: 11pt; line-height: 1.5;
+  }
+  h1 { margin: 0 0 18pt; padding: 0 0 9pt; font-size: 22pt; font-weight: 700; color: #183b63; border-bottom: 1.5pt solid #8da7c2; }
+  h2 { margin: 22pt 0 10pt; padding: 0 0 5pt; font-size: 15pt; color: #183b63; border-bottom: 0.75pt solid #c8d2dc; }
+  h3 { margin: 0 0 4pt; font-size: 11.5pt; color: #202733; }
+  p { margin: 3pt 0 8pt; }
+  .profile { width: 100%; border-collapse: collapse; margin: 0 0 12pt; }
+  .profile td { padding: 4pt 6pt 4pt 0; vertical-align: top; border: 0; }
+  .profile .key { width: 31%; font-weight: 700; color: #394b5e; }
+  .entry { margin: 0 0 12pt; padding: 0 0 8pt; border-bottom: 0.5pt solid #d8dee5; page-break-inside: avoid; }
+  .details, .muted { color: #596777; font-size: 9.5pt; }
+  .certificate-wrap { margin: 8pt 0 4pt; text-align: center; page-break-inside: avoid; }
+  .certificate { display: inline-block; max-width: 100%; width: auto; height: auto; max-height: 235mm; object-fit: contain; }
+  .footer { margin-top: 24pt; padding-top: 6pt; border-top: 0.5pt solid #d8dee5; color: #6b7785; font-size: 8.5pt; }
+  @media screen { body { margin: 24px auto; padding: 28px; box-shadow: 0 2px 18px rgba(20,40,60,.08); } }
+  @media print { body { max-width: none; margin: 0; padding: 0; box-shadow: none; } }
+</style>
+</head>
+<body>
+  <h1>Портфолио ученика</h1>
+  <table class="profile">
+    <tr><td class="key">ФИО</td><td>${escapeHTML(p.name || "Не заполнено")}</td></tr>
+    <tr><td class="key">Класс / курс</td><td>${escapeHTML(p.grade || "Не заполнено")}</td></tr>
+    <tr><td class="key">Школа</td><td>${escapeHTML(p.school || "Не заполнено")}</td></tr>
+    <tr><td class="key">Город</td><td>${escapeHTML(p.city || "Не заполнено")}</td></tr>
+    <tr><td class="key">Интересы</td><td>${escapeHTML(p.interests || "Не указаны")}</td></tr>
+    <tr><td class="key">Навыки</td><td>${escapeHTML(p.skills || "Не указаны")}</td></tr>
+  </table>
+  <h2>Проекты</h2>
+  ${projects || "<p>Проекты не добавлены.</p>"}
+  <h2>Олимпиады, конкурсы и достижения</h2>
+  ${achievements || "<p>Достижения не добавлены.</p>"}
+  <p class="footer">Сформировано в «Навигаторе будущего» · ${new Date().toLocaleDateString("ru-RU")}</p>
+</body>
+</html>`;
 }
 
 function downloadBlob(content, type, filename) {
   const blob = new Blob([content], { type });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
-  link.href = url; link.download = filename; link.click();
-  setTimeout(() => URL.revokeObjectURL(url), 1500);
+  link.href = url; link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
 }
 
 function exportPortfolioWord() {
-  downloadBlob("\ufeff" + buildPortfolioHTML(), "application/msword;charset=utf-8", "portfolio-navigator-future.doc");
+  // HTML-файл открывается в Microsoft Word без маскировки под неподдерживаемый .doc.
+  // В Word ученик может выбрать «Файл → Сохранить как → Документ Word (.docx)».
+  downloadBlob("\\ufeff" + buildPortfolioHTML(), "text/html;charset=utf-8", "portfolio-navigator-future.html");
 }
 
 function printPortfolio() {
   const popup = window.open("", "_blank");
   if (!popup) return alert("Браузер заблокировал новое окно. Разреши всплывающие окна для печати портфолио.");
-  popup.onload = () => popup.print();
-  popup.document.open(); popup.document.write(buildPortfolioHTML()); popup.document.close();
+  const html = buildPortfolioHTML();
+  popup.document.open();
+  popup.document.write(html);
+  popup.document.close();
+
+  const printWhenReady = async () => {
+    try {
+      if (popup.document.fonts && popup.document.fonts.ready) await popup.document.fonts.ready;
+      const images = Array.from(popup.document.images);
+      await Promise.all(images.map(image => {
+        if (image.complete) return Promise.resolve();
+        return new Promise(resolve => {
+          image.addEventListener("load", resolve, { once: true });
+          image.addEventListener("error", resolve, { once: true });
+        });
+      }));
+    } catch (error) {
+      // Печать всё равно доступна, даже если браузер не сообщил о загрузке ресурса.
+    }
+    popup.focus();
+    popup.print();
+  };
+
+  popup.addEventListener("load", printWhenReady, { once: true });
+  // Резерв для браузеров, которые уже завершили загрузку до регистрации обработчика.
+  if (popup.document.readyState === "complete") printWhenReady();
 }
 
 function exportPortfolioText() {
