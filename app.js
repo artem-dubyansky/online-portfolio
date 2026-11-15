@@ -813,38 +813,132 @@ function renderQuiz() {
   }
 }
 
+const PROFESSION_GROUPS = [
+  "Все направления",
+  "Технологии и инженерия",
+  "Наука и медицина",
+  "Бизнес и управление",
+  "Дизайн и медиа",
+  "Общество и образование"
+];
+
+let professionActiveGroup = "Все направления";
+let professionVisibleCount = 8;
+let professionSearchQuery = "";
+
+function getProfessionGroup(item) {
+  const text = `${item.name} ${item.field}`.toLowerCase();
+
+  if (/бизнес|эконом|финанс|управлен|маркет|логист|предприним|персонал|продюсер/.test(text)) {
+    return "Бизнес и управление";
+  }
+  if (/дизайн|медиа|фотограф|аниматор|журналист|переводчик|язык/.test(text)) {
+    return "Дизайн и медиа";
+  }
+  if (/медицин|врач|стоматолог|ветеринар|фармацевт|психолог|образован|учител|преподавател|юрист|право|социальн/.test(text)) {
+    return "Общество и образование";
+  }
+  if (/наук|эколог|биотех|биолог|генет|нейро|геолог|астроном|физик|химик|микробиолог|агроном|климат|гидролог/.test(text)) {
+    return "Наука и медицина";
+  }
+  return "Технологии и инженерия";
+}
+
+function getProfessionMatches() {
+  return professions.filter(item => {
+    const matchesGroup = professionActiveGroup === "Все направления" ||
+      getProfessionGroup(item) === professionActiveGroup;
+    const searchable = `${item.name} ${item.field} ${item.description} ${item.skills}`.toLowerCase();
+    return matchesGroup && searchable.includes(professionSearchQuery);
+  });
+}
+
 function renderProfessions() {
+  professionActiveGroup = "Все направления";
+  professionVisibleCount = 8;
+  professionSearchQuery = "";
+
   app.innerHTML = `<section class="page">${pageHeader("professions")}
-    <input class="search-input" id="profession-search" type="search" placeholder="Найти профессию...">
+    <div class="profession-toolbar">
+      <label class="profession-search-label" for="profession-search">Поиск по каталогу</label>
+      <input class="search-input" id="profession-search" type="search" placeholder="Например, инженер, дизайн, математика...">
+      <div class="profession-filter-heading">
+        <strong>Направления</strong>
+        <span class="muted small">Выбери интересующую область</span>
+      </div>
+      <div class="profession-filters" id="profession-filters" aria-label="Фильтр по направлениям">
+        ${PROFESSION_GROUPS.map((group, index) => `
+          <button type="button" class="profession-filter${index === 0 ? " active" : ""}" data-profession-filter="${escapeHTML(group)}">${escapeHTML(group)}</button>
+        `).join("")}
+      </div>
+      <div class="profession-results-count" id="profession-results-count" aria-live="polite"></div>
+    </div>
     <div class="card-grid" id="profession-list"></div>
   </section>`;
 
-  drawProfessions(professions);
-
   document.getElementById("profession-search").addEventListener("input", event => {
-    const query = event.target.value.toLowerCase();
-
-    drawProfessions(professions.filter(item =>
-      `${item.name} ${item.field} ${item.description} ${item.skills}`.toLowerCase().includes(query)
-    ));
+    professionSearchQuery = event.target.value.trim().toLowerCase();
+    professionVisibleCount = 8;
+    drawProfessions(getProfessionMatches());
   });
+
+  document.getElementById("profession-filters").addEventListener("click", event => {
+    const button = event.target.closest("[data-profession-filter]");
+    if (!button) return;
+    professionActiveGroup = button.dataset.professionFilter;
+    professionVisibleCount = 8;
+    document.querySelectorAll("[data-profession-filter]").forEach(item => {
+      const active = item === button;
+      item.classList.toggle("active", active);
+      item.setAttribute("aria-pressed", String(active));
+    });
+    drawProfessions(getProfessionMatches());
+  });
+
+  drawProfessions(getProfessionMatches());
 }
 
 function drawProfessions(items) {
   const list = document.getElementById("profession-list");
   if (!list) return;
 
-  list.innerHTML = items.length ? items.map(item => {
+  const count = document.getElementById("profession-results-count");
+  if (count) {
+    const label = professionActiveGroup === "Все направления"
+      ? "Во всём каталоге"
+      : professionActiveGroup;
+    count.textContent = `${label} · найдено: ${items.length}`;
+  }
+
+  if (!items.length) {
+    list.innerHTML = `<p class="empty-state">По этому запросу профессий не найдено. Попробуй изменить поиск или выбрать другое направление.</p>`;
+    return;
+  }
+
+  const visibleItems = items.slice(0, professionVisibleCount);
+  list.innerHTML = visibleItems.map(item => {
     const index = professions.indexOf(item);
     return `
       <button type="button" class="content-card profession-card" data-profession-open="${index}" aria-label="Подробнее о профессии: ${escapeHTML(item.name)}">
         <span class="tag">${escapeHTML(item.field)}</span>
         <h3>${escapeHTML(item.name)}</h3>
         <p>${escapeHTML(item.description)}</p>
-        <p class="small"><strong>Полезные навыки:</strong> ${escapeHTML(item.skills)}</p>
-        <span class="profession-hint">Нажми, чтобы узнать подробнее →</span>
+        <p class="small profession-skills"><strong>Полезные навыки:</strong> ${escapeHTML(item.skills)}</p>
+        <span class="profession-hint">Подробнее о профессии →</span>
       </button>`;
-  }).join("") : `<p class="empty-state">Ничего не найдено.</p>`;
+  }).join("");
+
+  if (visibleItems.length < items.length) {
+    const more = document.createElement("button");
+    more.type = "button";
+    more.className = "secondary-button profession-more";
+    more.textContent = `Показать ещё (${items.length - visibleItems.length})`;
+    more.addEventListener("click", () => {
+      professionVisibleCount += 8;
+      drawProfessions(items);
+    });
+    list.appendChild(more);
+  }
 }
 
 function drawProfessionDetails(index) {
