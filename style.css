@@ -666,3 +666,21 @@ textarea:focus-visible, select:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
 }
+
+
+/* Расширенная профориентационная диагностика */
+.diagnostic-intro { max-width: 780px; margin-bottom: 18px; }
+.diagnostic-intro p { margin: 7px 0 0; }
+.diagnostic-card { max-width: 780px; }
+.diagnostic-meta, .diagnostic-row-label {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; flex-wrap: wrap;
+}
+.diagnostic-meta { margin-bottom: 12px; }
+.diagnostic-row { margin: 12px 0 16px; }
+.diagnostic-row-label { font-size: 14px; margin-bottom: 7px; }
+.diagnostic-row-label span { color: var(--muted); font-size: 12px; }
+.diagnostic-result { max-width: 850px; }
+.diagnostic-result h3 { margin: 22px 0 10px; color: var(--text); }
+.diagnostic-tags { display: flex; flex-wrap: wrap; gap: 7px; margin: 12px 0; }
+.diagnostic-tags .tag { margin: 0; }

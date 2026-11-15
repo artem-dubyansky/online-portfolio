@@ -144,63 +144,468 @@ const professions = [
 
 const quiz = [
   {
-    question: "Какие задачи тебе интереснее?",
-    options: [
-      ["Создавать устройства и механизмы", "engineering"],
-      ["Работать с программами и технологиями", "it"],
-      ["Исследовать природу и проводить эксперименты", "science"],
-      ["Организовывать людей и проекты", "business"],
-      ["Создавать визуальные решения", "design"]
+    "section": "Интересы",
+    "question": "Какая задача кажется тебе наиболее увлекательной?",
+    "options": [
+      [
+        "Спроектировать механизм или устройство",
+        "engineering",
+        "technical"
+      ],
+      [
+        "Создать сайт или приложение",
+        "it",
+        "logic"
+      ],
+      [
+        "Поставить опыт и проверить гипотезу",
+        "science",
+        "research"
+      ],
+      [
+        "Придумать и организовать полезный проект",
+        "business",
+        "organization"
+      ],
+      [
+        "Разработать внешний вид продукта",
+        "design",
+        "creativity"
+      ]
     ]
   },
   {
-    question: "Какой школьный предмет тебе ближе?",
-    options: [
-      ["Математика и физика", "engineering"],
-      ["Информатика", "it"],
-      ["Биология и химия", "science"],
-      ["Обществознание и экономика", "business"],
-      ["Искусство и черчение", "design"]
+    "section": "Интересы",
+    "question": "Какой результат работы тебе хотелось бы увидеть?",
+    "options": [
+      [
+        "Работающую техническую конструкцию",
+        "engineering",
+        "technical"
+      ],
+      [
+        "Программу, которой пользуются люди",
+        "it",
+        "logic"
+      ],
+      [
+        "Объяснение научного явления",
+        "science",
+        "research"
+      ],
+      [
+        "Успешно реализованную идею или мероприятие",
+        "business",
+        "communication"
+      ],
+      [
+        "Удобный и красивый интерфейс",
+        "design",
+        "creativity"
+      ]
     ]
   },
   {
-    question: "Какой результат работы тебе приятнее?",
-    options: [
-      ["Работающий механизм", "engineering"],
-      ["Работающая программа", "it"],
-      ["Научное открытие", "science"],
-      ["Успешно организованный проект", "business"],
-      ["Красивый и удобный дизайн", "design"]
+    "section": "Интересы",
+    "question": "Какую тему ты скорее выберешь для самостоятельного изучения?",
+    "options": [
+      [
+        "Как устроены машины и приборы",
+        "engineering",
+        "technical"
+      ],
+      [
+        "Как работают алгоритмы и цифровые сервисы",
+        "it",
+        "logic"
+      ],
+      [
+        "Как устроены живые организмы и природа",
+        "science",
+        "research"
+      ],
+      [
+        "Как создаются компании и продукты",
+        "business",
+        "organization"
+      ],
+      [
+        "Как цвет, форма и композиция влияют на восприятие",
+        "design",
+        "creativity"
+      ]
     ]
   },
   {
-    question: "В какой деятельности ты хотел бы попробовать себя?",
-    options: [
-      ["Собирать и проектировать", "engineering"],
-      ["Программировать", "it"],
-      ["Проводить исследования", "science"],
-      ["Руководить командой", "business"],
-      ["Создавать дизайн", "design"]
+    "section": "Интересы",
+    "question": "Какой проект ты бы хотел попробовать сделать?",
+    "options": [
+      [
+        "Модель устройства или робота",
+        "engineering",
+        "technical"
+      ],
+      [
+        "Небольшое приложение или игру",
+        "it",
+        "logic"
+      ],
+      [
+        "Исследование с выводами",
+        "science",
+        "research"
+      ],
+      [
+        "План запуска школьной инициативы",
+        "business",
+        "communication"
+      ],
+      [
+        "Макет сайта, предмета или пространства",
+        "design",
+        "creativity"
+      ]
     ]
   },
   {
-    question: "Что тебе интереснее изучать самостоятельно?",
-    options: [
-      ["Устройство техники", "engineering"],
-      ["Новые цифровые технологии", "it"],
-      ["Законы природы", "science"],
-      ["Работу компаний и рынков", "business"],
-      ["Визуальные стили и композицию", "design"]
+    "section": "Интересы",
+    "question": "С какими материалами или инструментами тебе интереснее работать?",
+    "options": [
+      [
+        "Чертежи, детали и технические модели",
+        "engineering",
+        "technical"
+      ],
+      [
+        "Код, данные и цифровые инструменты",
+        "it",
+        "logic"
+      ],
+      [
+        "Наблюдения, измерения и научные материалы",
+        "science",
+        "research"
+      ],
+      [
+        "Планы, бюджеты и командные задачи",
+        "business",
+        "organization"
+      ],
+      [
+        "Эскизы, изображения и макеты",
+        "design",
+        "creativity"
+      ]
     ]
   },
   {
-    question: "Какой проект ты бы выбрал?",
-    options: [
-      ["Создать модель устройства", "engineering"],
-      ["Разработать приложение", "it"],
-      ["Провести исследование", "science"],
-      ["Запустить собственный проект", "business"],
-      ["Создать дизайн продукта", "design"]
+    "section": "Мышление и навыки",
+    "question": "Если задача кажется сложной, с чего ты обычно начинаешь?",
+    "options": [
+      [
+        "Разбиваю её на логические шаги",
+        "it",
+        "logic"
+      ],
+      [
+        "Рисую схему или придумываю несколько вариантов",
+        "design",
+        "creativity"
+      ],
+      [
+        "Проверяю, как устроены детали и система",
+        "engineering",
+        "technical"
+      ],
+      [
+        "Ищу дополнительные сведения и доказательства",
+        "science",
+        "research"
+      ],
+      [
+        "Обсуждаю задачу с другими",
+        "business",
+        "communication"
+      ]
+    ]
+  },
+  {
+    "section": "Мышление и навыки",
+    "question": "Какое задание тебе было бы интереснее выполнить?",
+    "options": [
+      [
+        "Найти закономерность в таблице данных",
+        "it",
+        "logic"
+      ],
+      [
+        "Придумать необычное оформление",
+        "design",
+        "creativity"
+      ],
+      [
+        "Собрать модель по инструкции",
+        "engineering",
+        "technical"
+      ],
+      [
+        "Сравнить результаты наблюдений",
+        "science",
+        "research"
+      ],
+      [
+        "Распределить роли в небольшой команде",
+        "business",
+        "organization"
+      ]
+    ]
+  },
+  {
+    "section": "Мышление и навыки",
+    "question": "Что у тебя вызывает больше интереса?",
+    "options": [
+      [
+        "Головоломки и задачи с правилами",
+        "it",
+        "logic"
+      ],
+      [
+        "Открытые задачи, где можно придумать своё решение",
+        "design",
+        "creativity"
+      ],
+      [
+        "Понимание принципа работы устройств",
+        "engineering",
+        "technical"
+      ],
+      [
+        "Поиск причин и проверка предположений",
+        "science",
+        "research"
+      ],
+      [
+        "Объяснение идей и обмен мнениями",
+        "business",
+        "communication"
+      ]
+    ]
+  },
+  {
+    "section": "Мышление и навыки",
+    "question": "Какой способ работы тебе ближе?",
+    "options": [
+      [
+        "Анализировать информацию и делать выводы",
+        "it",
+        "logic"
+      ],
+      [
+        "Создавать эскизы и визуальные концепции",
+        "design",
+        "creativity"
+      ],
+      [
+        "Работать с инструментами и техническими моделями",
+        "engineering",
+        "technical"
+      ],
+      [
+        "Проводить наблюдения и фиксировать результаты",
+        "science",
+        "research"
+      ],
+      [
+        "Координировать задачи и помогать команде",
+        "business",
+        "organization"
+      ]
+    ]
+  },
+  {
+    "section": "Мышление и навыки",
+    "question": "Какой результат ты считаешь самым убедительным?",
+    "options": [
+      [
+        "Решение, которое можно логически доказать",
+        "it",
+        "logic"
+      ],
+      [
+        "Оригинальная идея с понятным визуальным образом",
+        "design",
+        "creativity"
+      ],
+      [
+        "Модель, которая работает на практике",
+        "engineering",
+        "technical"
+      ],
+      [
+        "Вывод, подтверждённый наблюдениями",
+        "science",
+        "research"
+      ],
+      [
+        "Результат, которого команда достигла вместе",
+        "business",
+        "communication"
+      ]
+    ]
+  },
+  {
+    "section": "Предпочтения в работе",
+    "question": "В какой обстановке тебе было бы комфортнее работать?",
+    "options": [
+      [
+        "Спокойно решать задачи самостоятельно",
+        "it",
+        "logic"
+      ],
+      [
+        "Свободно придумывать и экспериментировать",
+        "design",
+        "creativity"
+      ],
+      [
+        "Работать с оборудованием и моделями",
+        "engineering",
+        "technical"
+      ],
+      [
+        "Изучать информацию и проводить исследования",
+        "science",
+        "research"
+      ],
+      [
+        "Общаться и взаимодействовать с людьми",
+        "business",
+        "communication"
+      ]
+    ]
+  },
+  {
+    "section": "Предпочтения в работе",
+    "question": "Что для тебя важнее в командном проекте?",
+    "options": [
+      [
+        "Понятные задачи и последовательность действий",
+        "it",
+        "logic"
+      ],
+      [
+        "Возможность предложить нестандартную идею",
+        "design",
+        "creativity"
+      ],
+      [
+        "Создать и проверить работающий прототип",
+        "engineering",
+        "technical"
+      ],
+      [
+        "Точность и обоснованность результата",
+        "science",
+        "research"
+      ],
+      [
+        "Обсуждать решения и объединять участников",
+        "business",
+        "communication"
+      ]
+    ]
+  },
+  {
+    "section": "Предпочтения в работе",
+    "question": "Какую роль ты бы выбрал в небольшой команде?",
+    "options": [
+      [
+        "Продумать логику и последовательность",
+        "it",
+        "logic"
+      ],
+      [
+        "Отвечать за идеи и визуальную часть",
+        "design",
+        "creativity"
+      ],
+      [
+        "Собирать и проверять техническую часть",
+        "engineering",
+        "technical"
+      ],
+      [
+        "Искать информацию и проверять факты",
+        "science",
+        "research"
+      ],
+      [
+        "Распределять задачи и следить за сроками",
+        "business",
+        "organization"
+      ]
+    ]
+  },
+  {
+    "section": "Предпочтения в работе",
+    "question": "Какой рабочий процесс тебе ближе?",
+    "options": [
+      [
+        "Постепенно улучшать алгоритм или систему",
+        "it",
+        "logic"
+      ],
+      [
+        "Пробовать разные идеи и менять концепцию",
+        "design",
+        "creativity"
+      ],
+      [
+        "Создавать, тестировать и дорабатывать устройство",
+        "engineering",
+        "technical"
+      ],
+      [
+        "Ставить вопросы и искать подтверждения",
+        "science",
+        "research"
+      ],
+      [
+        "Планировать этапы и взаимодействие людей",
+        "business",
+        "organization"
+      ]
+    ]
+  },
+  {
+    "section": "Предпочтения в работе",
+    "question": "Что помогло бы тебе почувствовать, что проект удался?",
+    "options": [
+      [
+        "Всё работает чётко и без лишних шагов",
+        "it",
+        "logic"
+      ],
+      [
+        "Получилось выразительное и оригинальное решение",
+        "design",
+        "creativity"
+      ],
+      [
+        "Идея превратилась в работающую конструкцию",
+        "engineering",
+        "technical"
+      ],
+      [
+        "Удалось узнать что-то новое и подтвердить выводы",
+        "science",
+        "research"
+      ],
+      [
+        "Команда достигла общей цели",
+        "business",
+        "communication"
+      ]
     ]
   }
 ];
@@ -211,6 +616,23 @@ const fieldNames = {
   science: "Наука и исследования",
   business: "Бизнес и управление",
   design: "Дизайн и творчество"
+};
+
+const skillNames = {
+  logic: "Логическое мышление",
+  creativity: "Творческое мышление",
+  technical: "Техническое мышление",
+  communication: "Коммуникация",
+  research: "Исследовательский подход",
+  organization: "Организация и планирование"
+};
+
+const fieldDescriptions = {
+  engineering: "конструирование, инженерия, робототехника и технические системы",
+  it: "программирование, анализ данных и цифровые продукты",
+  science: "естественные науки, исследования и эксперименты",
+  business: "управление, предпринимательство и организация проектов",
+  design: "дизайн, визуальные коммуникации и создание пользовательского опыта"
 };
 
 function pageHeader(id) {
@@ -258,16 +680,42 @@ function renderHome() {
 
 function renderOrientation() {
   const result = data.testResult;
+  const hasNewResult = result && result.version === 2;
 
   app.innerHTML = `<section class="page">${pageHeader("orientation")}
-    ${result ? `
-      <div class="result-box">
-        <span class="eyebrow">РЕЗУЛЬТАТ ТЕСТА</span>
+    ${hasNewResult ? `
+      <div class="result-box diagnostic-result">
+        <span class="eyebrow">ТВОЙ ПРОФИЛЬ ИНТЕРЕСОВ</span>
         <h2>${escapeHTML(result.name)}</h2>
-        <p>Это предварительная рекомендация по твоим ответам, а не окончательный выбор профессии. Изучи направление и попробуй практические задания.</p>
-        <button class="secondary-button" id="restart-quiz">Пройти тест заново</button>
-        <button class="primary-button" data-page="professions">Посмотреть профессии</button>
-      </div>` : `<div id="quiz-container"></div>`}
+        <p>По твоим ответам эти направления стоит исследовать в первую очередь. Это ориентир для знакомства с профессиями, а не оценка способностей и не окончательный выбор.</p>
+        <h3>Направления, которые тебе интересны</h3>
+        <div class="diagnostic-list">
+          ${result.directions.map((item, index) => `
+            <div class="diagnostic-row">
+              <div class="diagnostic-row-label"><strong>${index + 1}. ${escapeHTML(item.name)}</strong><span>${item.percent}% ответов</span></div>
+              <div class="progress-track"><div class="progress-fill" style="width:${item.percent}%"></div></div>
+            </div>`).join("")}
+        </div>
+        <h3>Сильнее выраженные предпочтения</h3>
+        <div class="diagnostic-tags">
+          ${result.skills.map(item => `<span class="tag">${escapeHTML(item.name)}</span>`).join("")}
+        </div>
+        <p class="muted small">Проценты показывают долю выбранных ответов внутри этой анкеты. Это не научная диагностика и не измерение интеллекта или профессиональной пригодности.</p>
+        <div class="notice"><strong>Что попробовать дальше:</strong> ${escapeHTML(result.nextStep)}</div>
+        <button class="secondary-button" id="restart-quiz">Пройти диагностику заново</button>
+        <button class="primary-button" data-page="professions">Посмотреть подходящие профессии</button>
+      </div>` : result ? `
+      <div class="result-box">
+        <span class="eyebrow">ПРЕДЫДУЩИЙ РЕЗУЛЬТАТ</span>
+        <h2>${escapeHTML(result.name)}</h2>
+        <p>Это результат прежней короткой версии теста. Теперь доступна расширенная диагностика из трёх частей: интересы, мышление и навыки, предпочтения в работе.</p>
+        <button class="primary-button" id="restart-quiz">Пройти расширенную диагностику</button>
+      </div>` : `
+      <div class="notice diagnostic-intro">
+        <strong>15 вопросов · 3 части · около 5 минут</strong>
+        <p>Изучим твои интересы, подход к решению задач и предпочтения в работе. В результате ты получишь несколько направлений для исследования и список выраженных предпочтений.</p>
+      </div>
+      <div id="quiz-container"></div>`}
   </section>`;
 
   if (!result) renderQuiz();
@@ -280,57 +728,89 @@ function renderQuiz() {
   const index = Object.keys(quizAnswers).length;
 
   if (index >= quiz.length) {
-    const scores = {};
-    Object.values(quizAnswers).forEach(field => {
-      scores[field] = (scores[field] || 0) + 1;
+    const interestScores = Object.fromEntries(Object.keys(fieldNames).map(key => [key, 0]));
+    const skillScores = Object.fromEntries(Object.keys(skillNames).map(key => [key, 0]));
+
+    Object.values(quizAnswers).forEach(answer => {
+      const [interest, skill] = answer.split("|");
+      if (Object.hasOwn(interestScores, interest)) interestScores[interest] += 1;
+      if (Object.hasOwn(skillScores, skill)) skillScores[skill] += 1;
     });
 
-    const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
-    const best = sorted[0][0];
+    const directions = Object.entries(interestScores)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(([key, score]) => ({
+        key,
+        name: fieldNames[key],
+        score,
+        percent: Math.round(score / quiz.length * 100)
+      }));
 
+    const skills = Object.entries(skillScores)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(([key, score]) => ({ key, name: skillNames[key], score }));
+
+    const best = directions[0];
     data.testResult = {
-      name: fieldNames[best],
-      scores
+      version: 2,
+      name: best.name,
+      directions,
+      skills,
+      interestScores,
+      skillScores,
+      nextStep: fieldDescriptions[best.key] + ". Начни с одной профессии и попробуй небольшое практическое задание."
     };
 
-    saveData();
+    if (!saveData()) return;
     renderOrientation();
     return;
   }
 
   const question = quiz[index];
+  const sectionStart = quiz.findIndex(item => item.section === question.section);
+  const sectionEnd = quiz.findLastIndex(item => item.section === question.section) + 1;
+  const sectionNumber = [...new Set(quiz.map(item => item.section))].indexOf(question.section) + 1;
+  const sectionCount = new Set(quiz.map(item => item.section)).size;
 
   container.innerHTML = `
-    <div class="form-card">
-      <div class="list-row">
-        <strong>Вопрос ${index + 1} из ${quiz.length}</strong>
-        <span class="muted">${Math.round(index / quiz.length * 100)}%</span>
+    <div class="form-card diagnostic-card">
+      <div class="diagnostic-meta">
+        <span class="tag">Часть ${sectionNumber} из ${sectionCount}: ${escapeHTML(question.section)}</span>
+        <span class="muted">Вопрос ${index + 1} из ${quiz.length}</span>
       </div>
-      <div class="progress-track">
-        <div class="progress-fill" style="width:${index / quiz.length * 100}%"></div>
-      </div>
-      <h2 class="question-title">${question.question}</h2>
+      <div class="progress-track"><div class="progress-fill" style="width:${Math.round(index / quiz.length * 100)}%"></div></div>
+      <p class="muted small">Прогресс всей диагностики: ${Math.round(index / quiz.length * 100)}%</p>
+      <h2 class="question-title">${escapeHTML(question.question)}</h2>
       <div class="option-list">
-        ${question.options.map(([label, value]) => `
+        ${question.options.map(([label, interest, skill]) => `
           <label class="option">
-            <input type="radio" name="quiz-answer" value="${value}">
-            <span>${label}</span>
+            <input type="radio" name="quiz-answer" value="${interest}|${skill}">
+            <span>${escapeHTML(label)}</span>
           </label>`).join("")}
       </div>
-      <button class="primary-button" id="quiz-next">Следующий вопрос →</button>
+      <button class="primary-button" id="quiz-next">${index === quiz.length - 1 ? "Получить результат" : "Следующий вопрос →"}</button>
+      ${index > 0 ? '<button class="secondary-button" id="quiz-back">← Предыдущий вопрос</button>' : ""}
     </div>`;
 
   document.getElementById("quiz-next").addEventListener("click", () => {
     const selected = container.querySelector('input[name="quiz-answer"]:checked');
-
     if (!selected) {
       alert("Выбери один вариант ответа.");
       return;
     }
-
     quizAnswers[index] = selected.value;
     renderQuiz();
   });
+
+  const backButton = document.getElementById("quiz-back");
+  if (backButton) {
+    backButton.addEventListener("click", () => {
+      delete quizAnswers[index - 1];
+      renderQuiz();
+    });
+  }
 }
 
 function renderProfessions() {
