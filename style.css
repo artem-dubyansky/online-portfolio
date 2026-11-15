@@ -756,3 +756,33 @@ textarea:focus-visible, select:focus-visible {
 }
 .app-inline-confirm p { margin: 0 0 12px; }
 .app-inline-confirm-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+
+/* Мобильный экспорт портфолио */
+.portfolio-export-result {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+.portfolio-export-message {
+  flex: 1 0 100%;
+  margin: 0;
+  color: #344256;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.portfolio-file-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  min-height: 44px;
+}
+@media (max-width: 650px) {
+  .export-actions { display: grid; grid-template-columns: 1fr; }
+  .export-actions button { width: 100%; min-height: 46px; }
+  .portfolio-export-result { display: grid; grid-template-columns: 1fr; }
+  .portfolio-export-result > * { width: 100%; text-align: center; }
+}
