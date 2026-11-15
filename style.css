@@ -723,3 +723,36 @@ textarea:focus-visible, select:focus-visible {
   .profession-card .profession-hint { padding-top: 2px; font-size: 12px; }
   .profession-more { width: 100%; }
 }
+
+
+/* Ненавязчивые сообщения вместо системных окон браузера */
+.app-notice {
+  margin: 0 0 18px;
+  padding: 12px 15px;
+  border: 1px solid #cbdcf5;
+  border-radius: 10px;
+  background: #f2f7ff;
+  color: #24466f;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.app-notice.is-warning {
+  border-color: #e7d7a7;
+  background: #fff9e9;
+  color: #70551b;
+}
+.app-notice.is-error {
+  border-color: #efc5c5;
+  background: #fff4f4;
+  color: #8a3030;
+}
+.app-inline-confirm {
+  margin: 0 0 18px;
+  padding: 16px;
+  border: 1px solid #e4bcbc;
+  border-radius: 10px;
+  background: #fff8f8;
+  color: #382626;
+}
+.app-inline-confirm p { margin: 0 0 12px; }
+.app-inline-confirm-actions { display: flex; flex-wrap: wrap; gap: 8px; }
