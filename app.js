@@ -1207,10 +1207,11 @@ function renderPortfolio() {
     </div>
     <div class="form-card">
       <h2>Экспорт портфолио</h2>
-      <p class="muted small">Скачай оформленное портфолио в редактируемом формате Word (.docx) или подготовь PDF. Для PDF откроется окно печати браузера — выбери «Сохранить как PDF». В документ попадут анкета, проекты, достижения и фотографии грамот. JSON — отдельная техническая резервная копия.</p>
+      <p class="muted small">Word можно скачать или отправить через системное меню «Поделиться». Для PDF откроется печать этой страницы: выбери «Сохранить как PDF» (на iPhone — значок «Поделиться» в окне печати, затем «Сохранить в Файлы»). В документ попадут анкета, проекты, достижения и фотографии грамот.</p>
       <div class="export-actions">
         <button class="primary-button" id="portfolio-word">Скачать Word (.docx)</button>
         <button class="secondary-button" id="portfolio-pdf">Подготовить PDF</button>
+        <div id="portfolio-export-result" class="portfolio-export-result" aria-live="polite"></div>
         <button class="secondary-button" id="portfolio-text">Скачать текст портфолио (TXT)</button>
         <button class="secondary-button" id="export-data">Скачать техническую резервную копию (JSON)</button>
       </div>
@@ -1491,48 +1492,133 @@ async function createPortfolioDocx() {
   return docx.Packer.toBlob(document);
 }
 
+let portfolioWordObjectUrl = null;
+let portfolioWordFile = null;
+
 async function exportPortfolioWord() {
   const button = document.getElementById("portfolio-word");
+  const result = document.getElementById("portfolio-export-result");
   if (button) { button.disabled = true; button.textContent = "Подготавливаю Word…"; }
+  if (result) result.replaceChildren();
   try {
     const blob = await createPortfolioDocx();
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "portfolio-navigator-future.docx";
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 3000);
+    if (portfolioWordObjectUrl) URL.revokeObjectURL(portfolioWordObjectUrl);
+    portfolioWordObjectUrl = URL.createObjectURL(blob);
+    portfolioWordFile = new File([blob], "portfolio-navigator-future.docx", {
+      type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    });
+
+    if (result) {
+      const message = document.createElement("p");
+      message.className = "portfolio-export-message";
+      message.textContent = "Документ Word готов. Нажми на ссылку ниже, чтобы открыть или сохранить файл.";
+      const link = document.createElement("a");
+      link.className = "primary-button portfolio-file-link";
+      link.href = portfolioWordObjectUrl;
+      link.download = "portfolio-navigator-future.docx";
+      link.textContent = "Открыть / скачать Word";
+      result.append(message, link);
+
+      if (navigator.share && navigator.canShare) {
+        try {
+          if (navigator.canShare({ files: [portfolioWordFile] })) {
+            const share = document.createElement("button");
+            share.type = "button";
+            share.className = "secondary-button";
+            share.textContent = "Поделиться файлом";
+            share.addEventListener("click", async () => {
+              try {
+                await navigator.share({ files: [portfolioWordFile], title: "Портфолио ученика" });
+              } catch (error) {
+                if (error.name !== "AbortError") showNotice("Не удалось открыть меню «Поделиться». Используй ссылку на файл.", "warning");
+              }
+            });
+            result.append(share);
+          }
+        } catch (error) {
+          console.warn("Проверка передачи файла не удалась:", error);
+        }
+      }
+      showNotice("Файл Word подготовлен. Используй появившуюся ссылку или кнопку «Поделиться файлом».");
+    }
   } catch (error) {
     console.error("Ошибка экспорта DOCX:", error);
-    showNotice(error.message || "Не удалось создать документ Word. Попробуй ещё раз.");
+    showNotice(error.message || "Не удалось создать документ Word. Попробуй ещё раз.", "error");
   } finally {
-    if (button) { button.disabled = false; button.textContent = "Скачать Word (.docx)"; }
+    if (button) { button.disabled = false; button.textContent = "Подготовить Word (.docx)"; }
   }
 }
 
 function printPortfolio() {
-  const popup = window.open("", "_blank");
-  if (!popup) return showNotice("Браузер заблокировал окно печати. Для PDF используй разрешённое браузером скачивание или открой портфолио на компьютере.", "warning");
-  popup.document.open();
-  popup.document.write(buildPortfolioHTML());
-  popup.document.close();
-  const printWhenReady = async () => {
-    try {
-      if (popup.document.fonts && popup.document.fonts.ready) await popup.document.fonts.ready;
-      await Promise.all(Array.from(popup.document.images).map(image => image.complete ? Promise.resolve() : new Promise(resolve => {
-        image.addEventListener("load", resolve, { once: true });
-        image.addEventListener("error", resolve, { once: true });
-      })));
-    } catch (error) {
-      console.warn("Не удалось дождаться загрузки элементов документа:", error);
+  const result = document.getElementById("portfolio-export-result");
+  document.getElementById("portfolio-print-root")?.remove();
+  document.getElementById("portfolio-print-style")?.remove();
+
+  const parser = new DOMParser();
+  const parsed = parser.parseFromString(buildPortfolioHTML(), "text/html");
+  const root = document.createElement("div");
+  root.id = "portfolio-print-root";
+  root.innerHTML = parsed.body.innerHTML;
+  const style = document.createElement("style");
+  style.id = "portfolio-print-style";
+  style.textContent = `
+    #portfolio-print-root { display: none; }
+    @media print {
+      @page { size: A4; margin: 18mm 16mm; }
+      html, body { margin: 0 !important; padding: 0 !important; background: #fff !important; }
+      body > *:not(#portfolio-print-root) { display: none !important; }
+      #portfolio-print-root { display: block !important; position: static !important; width: 100% !important; max-width: none !important; margin: 0 !important; padding: 0 !important; color: #202a38 !important; font-family: Arial, "Segoe UI", sans-serif !important; font-size: 11pt !important; line-height: 1.55 !important; }
+      #portfolio-print-root * { box-sizing: border-box; }
+      #portfolio-print-root .cover { min-height: 255mm; display: flex; flex-direction: column; justify-content: center; padding: 18mm 10mm; page-break-after: always; }
+      #portfolio-print-root .brand { font-size: 10pt; letter-spacing: 2px; text-transform: uppercase; color: #2457a6; font-weight: bold; margin-bottom: 28mm; }
+      #portfolio-print-root h1 { font-size: 29pt; line-height: 1.15; color: #1d2938; margin: 0 0 12mm; border-bottom: 4px solid #2457a6; padding-bottom: 8mm; }
+      #portfolio-print-root .cover-subtitle { font-size: 15pt; color: #687586; margin-bottom: 18mm; }
+      #portfolio-print-root .cover-name { font-size: 20pt; font-weight: bold; color: #2457a6; margin-bottom: 5mm; }
+      #portfolio-print-root .cover-meta { font-size: 11pt; color: #687586; }
+      #portfolio-print-root h2 { font-size: 17pt; color: #2457a6; margin: 17mm 0 7mm; padding-bottom: 3mm; border-bottom: 1.5px solid #cbd8e9; page-break-after: avoid; }
+      #portfolio-print-root h3 { font-size: 12pt; color: #1d2938; margin: 8mm 0 2mm; page-break-after: avoid; }
+      #portfolio-print-root p { margin: 2mm 0 4mm; }
+      #portfolio-print-root .profile-field { padding: 2mm 0; border-bottom: 1px solid #e8edf3; }
+      #portfolio-print-root .project-item, #portfolio-print-root .achievement-item { margin: 5mm 0 8mm; padding-bottom: 4mm; border-bottom: 1px solid #e1e7ef; break-inside: avoid; page-break-inside: avoid; }
+      #portfolio-print-root .meta { color: #687586; font-size: 10pt; }
+      #portfolio-print-root .certificate { display: block; max-width: 100%; width: auto; height: auto; max-height: 145mm; object-fit: contain; margin: 5mm auto 2mm; break-inside: avoid; page-break-inside: avoid; }
+      #portfolio-print-root .empty { color: #687586; font-style: italic; }
+      #portfolio-print-root .generated { margin-top: 18mm; padding-top: 4mm; border-top: 1px solid #dfe5ed; color: #687586; font-size: 9pt; }
     }
-    popup.focus();
-    popup.print();
+  `;
+  document.head.appendChild(style);
+  document.body.appendChild(root);
+
+  const cleanup = () => {
+    root.remove();
+    style.remove();
+    window.removeEventListener("afterprint", cleanup);
   };
-  if (popup.document.readyState === "complete") printWhenReady();
-  else popup.addEventListener("load", printWhenReady, { once: true });
+  window.addEventListener("afterprint", cleanup, { once: true });
+
+  if (result) {
+    result.replaceChildren();
+    const message = document.createElement("p");
+    message.className = "portfolio-export-message";
+    message.textContent = "Портфолио подготовлено. В системном окне печати выбери «Сохранить как PDF». На iPhone открой меню «Поделиться» в окне печати и выбери «Сохранить в Файлы».";
+    result.append(message);
+  }
+  showNotice("Портфолио подготовлено к печати. Выбери сохранение в PDF в меню устройства.");
+  const waitForImages = Promise.all(Array.from(root.querySelectorAll("img")).map(img =>
+    img.complete ? Promise.resolve() : new Promise(resolve => {
+      img.addEventListener("load", resolve, { once: true });
+      img.addEventListener("error", resolve, { once: true });
+    })
+  ));
+  Promise.all([waitForImages, document.fonts?.ready || Promise.resolve()]).then(() => {
+    requestAnimationFrame(() => {
+      try { window.print(); }
+      catch (error) {
+        cleanup();
+        showNotice("Браузер не открыл печать. Попробуй открыть сайт в Safari или Chrome.", "warning");
+      }
+    });
+  });
 }
 
 function exportPortfolioText() {
