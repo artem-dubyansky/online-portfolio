@@ -684,3 +684,42 @@ textarea:focus-visible, select:focus-visible {
 .diagnostic-result h3 { margin: 22px 0 10px; color: var(--text); }
 .diagnostic-tags { display: flex; flex-wrap: wrap; gap: 7px; margin: 12px 0; }
 .diagnostic-tags .tag { margin: 0; }
+
+
+/* Компактный каталог профессий */
+.profession-toolbar { margin: 0 0 20px; }
+.profession-search-label { display: block; margin: 0 0 7px; color: #344256; font-weight: 600; }
+.profession-toolbar .search-input { display: block; width: 100%; max-width: 620px; margin: 0 0 18px; }
+.profession-filter-heading { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 9px; }
+.profession-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.profession-filter {
+  border: 1px solid #d5deea; border-radius: 5px; padding: 8px 12px;
+  color: #344256; background: #fff; font: inherit; font-size: 13px;
+  cursor: pointer; white-space: nowrap;
+}
+.profession-filter:hover { border-color: #8da8cc; background: #f7faff; }
+.profession-filter.active { color: #fff; background: #2457a6; border-color: #2457a6; }
+.profession-results-count { color: #687586; font-size: 13px; margin: 5px 0 12px; }
+.profession-card { text-align: left; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+.profession-card h3 { margin: 2px 0; }
+.profession-card p { margin: 0; }
+.profession-card .profession-hint { margin-top: auto; padding-top: 5px; font-size: 13px; font-weight: 600; }
+.profession-more { grid-column: 1 / -1; justify-self: center; min-width: 190px; margin: 8px 0 16px; }
+@media (max-width: 650px) {
+  .profession-toolbar { margin-bottom: 14px; }
+  .profession-filter-heading { display: block; }
+  .profession-filter-heading .muted { display: block; margin-top: 3px; }
+  .profession-filters {
+    flex-wrap: nowrap; overflow-x: auto; overscroll-behavior-x: contain;
+    padding: 2px 1px 9px; margin-right: -4vw; scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+  }
+  .profession-filter { flex: 0 0 auto; padding: 8px 10px; font-size: 12px; }
+  .profession-card { padding: 13px 14px; gap: 5px; min-height: 0; }
+  .profession-card p:not(.profession-skills) { display: none; }
+  .profession-card .profession-skills { display: none; }
+  .profession-card h3 { font-size: 16px; line-height: 1.3; }
+  .profession-card .tag { font-size: 11px; padding: 3px 7px; }
+  .profession-card .profession-hint { padding-top: 2px; font-size: 12px; }
+  .profession-more { width: 100%; }
+}
