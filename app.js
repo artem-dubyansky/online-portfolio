@@ -49,13 +49,62 @@ function readStorage(key, fallback) {
   }
 }
 
+
+function showNotice(message, type = "success") {
+  const root = document.getElementById("app");
+  if (!root) return;
+  let notice = root.querySelector("#app-notice");
+  if (!notice) {
+    notice = document.createElement("div");
+    notice.id = "app-notice";
+    notice.className = "app-notice";
+    notice.setAttribute("role", "status");
+    notice.setAttribute("aria-live", "polite");
+    root.prepend(notice);
+  }
+  notice.className = "app-notice" + (type === "error" ? " is-error" : type === "warning" ? " is-warning" : "");
+  notice.textContent = String(message || "");
+}
+
+function confirmInPage(message) {
+  return new Promise(resolve => {
+    const root = document.getElementById("app");
+    if (!root) return resolve(false);
+    root.querySelector("#app-inline-confirm")?.remove();
+    const panel = document.createElement("div");
+    panel.id = "app-inline-confirm";
+    panel.className = "app-inline-confirm";
+    panel.setAttribute("role", "alertdialog");
+    panel.setAttribute("aria-modal", "true");
+    const text = document.createElement("p");
+    text.textContent = message;
+    const actions = document.createElement("div");
+    actions.className = "app-inline-confirm-actions";
+    const cancel = document.createElement("button");
+    cancel.type = "button";
+    cancel.className = "secondary-button";
+    cancel.textContent = "Отмена";
+    const approve = document.createElement("button");
+    approve.type = "button";
+    approve.className = "danger-button";
+    approve.textContent = "Удалить данные";
+    const finish = value => { panel.remove(); resolve(value); };
+    cancel.addEventListener("click", () => finish(false));
+    approve.addEventListener("click", () => finish(true));
+    actions.append(cancel, approve);
+    panel.append(text, actions);
+    root.prepend(panel);
+    cancel.focus();
+  });
+}
+
 function saveData() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     return true;
   } catch (error) {
     console.error("Не удалось сохранить данные:", error);
-    alert("Браузер не смог сохранить изменения. Проверь свободное место и настройки хранения сайта.");
+    showNotice("Браузер не смог сохранить изменения. Проверь свободное место и настройки хранения сайта.");
     return false;
   }
 }
@@ -797,7 +846,7 @@ function renderQuiz() {
   document.getElementById("quiz-next").addEventListener("click", () => {
     const selected = container.querySelector('input[name="quiz-answer"]:checked');
     if (!selected) {
-      alert("Выбери один вариант ответа.");
+      showNotice("Выбери один вариант ответа.");
       return;
     }
     quizAnswers[index] = selected.value;
@@ -989,12 +1038,12 @@ function renderPractice() {
   document.getElementById("practice-project-save").addEventListener("click", () => {
     const title = document.getElementById("practice-project-title").value.trim();
     const description = document.getElementById("practice-project-description").value.trim();
-    if (!title) return alert("Укажи название проекта.");
+    if (!title) return showNotice("Укажи название проекта.");
     data.projects.push({ id: createId(), title, description });
     if (!saveData()) { data.projects.pop(); return; }
     document.getElementById("practice-project-title").value = "";
     document.getElementById("practice-project-description").value = "";
-    alert("Проект сохранён в портфолио.");
+    showNotice("Проект сохранён в портфолио.");
   });
 }
 
@@ -1071,10 +1120,10 @@ function renderEducation() {
   document.getElementById("edu-add").addEventListener("click", () => {
     const get = id => document.getElementById(id).value.trim();
     const title = get("edu-title"), organizer = get("edu-organizer"), source = get("edu-source");
-    let parsed; try { parsed = new URL(source); } catch { return alert("Укажи корректную ссылку на официальную страницу."); }
-    if (!title || !organizer || !["https:", "http:"].includes(parsed.protocol)) return alert("Заполни название, организатора и официальную ссылку.");
+    let parsed; try { parsed = new URL(source); } catch { return showNotice("Укажи корректную ссылку на официальную страницу."); }
+    if (!title || !organizer || !["https:", "http:"].includes(parsed.protocol)) return showNotice("Заполни название, организатора и официальную ссылку.");
     items.push({ id: createId(), title, kind: get("edu-kind"), organizer, direction: get("edu-direction"), age: get("edu-age"), dates: get("edu-dates"), cost: get("edu-cost"), conditions: get("edu-conditions"), source, addedAt: new Date().toISOString() });
-    try { localStorage.setItem(key, JSON.stringify(items)); } catch { items.pop(); return alert("Не удалось сохранить запись. Возможно, закончилось место в браузере."); }
+    try { localStorage.setItem(key, JSON.stringify(items)); } catch { items.pop(); return showNotice("Не удалось сохранить запись. Возможно, закончилось место в браузере."); }
     ["edu-title","edu-organizer","edu-direction","edu-age","edu-dates","edu-cost","edu-conditions","edu-source"].forEach(id => document.getElementById(id).value = "");
     draw();
   });
@@ -1178,29 +1227,29 @@ function renderPortfolio() {
       interests: document.getElementById("profile-interests").value.trim(),
       skills: document.getElementById("profile-skills").value.trim()
     };
-    if (saveData()) alert("Анкета сохранена.");
+    if (saveData()) showNotice("Анкета сохранена.");
   });
   document.getElementById("project-add").addEventListener("click", () => {
     const title = document.getElementById("project-title").value.trim();
     const description = document.getElementById("project-description").value.trim();
-    if (!title) return alert("Укажи название проекта.");
+    if (!title) return showNotice("Укажи название проекта.");
     data.projects.push({ id: createId(), title, description });
     if (!saveData()) { data.projects.pop(); return; }
     drawProjects(); document.getElementById("project-title").value = ""; document.getElementById("project-description").value = "";
   });
   document.getElementById("achievement-add").addEventListener("click", async () => {
     const title = document.getElementById("achievement-title").value.trim();
-    if (!title) return alert("Укажи название олимпиады или конкурса.");
+    if (!title) return showNotice("Укажи название олимпиады или конкурса.");
     const file = document.getElementById("achievement-photo").files[0];
     let photo = "";
     if (file) {
-      if (!file.type.startsWith("image/")) return alert("Выбери файл изображения.");
-      if (file.size > 8 * 1024 * 1024) return alert("Файл слишком большой. Выбери изображение до 8 МБ.");
+      if (!file.type.startsWith("image/")) return showNotice("Выбери файл изображения.");
+      if (file.size > 8 * 1024 * 1024) return showNotice("Файл слишком большой. Выбери изображение до 8 МБ.");
       try { photo = await compressCertificateImage(file); }
-      catch { return alert("Не удалось обработать изображение. Попробуй другой файл."); }
+      catch { return showNotice("Не удалось обработать изображение. Попробуй другой файл."); }
     }
     const year = document.getElementById("achievement-year").value.trim();
-    if (year && !/^(19|20)\d{2}$/.test(year)) return alert("Укажи год в формате 2026.");
+    if (year && !/^(19|20)\d{2}$/.test(year)) return showNotice("Укажи год в формате 2026.");
     const item = {
       id: createId(), title,
       subject: document.getElementById("achievement-subject").value,
@@ -1218,8 +1267,8 @@ function renderPortfolio() {
   document.getElementById("portfolio-pdf").addEventListener("click", printPortfolio);
   document.getElementById("portfolio-text").addEventListener("click", exportPortfolioText);
   document.getElementById("export-data").addEventListener("click", exportData);
-  document.getElementById("clear-data").addEventListener("click", () => {
-    if (!confirm("Точно удалить все данные портфолио, маршрута, обучения и возможностей на этом устройстве? Сначала скачай резервную копию.")) return;
+  document.getElementById("clear-data").addEventListener("click", async () => {
+    if (!await confirmInPage("Удалить все данные портфолио, маршрута, обучения и возможностей на этом устройстве? Перед удалением скачай резервную копию.")) return;
     data = JSON.parse(JSON.stringify(defaultData));
     ["navigator_universities_v1","navigator_education_v1","navigator_opportunities_v1"].forEach(key => { try { localStorage.removeItem(key); } catch {} });
     saveData(); renderPortfolio();
@@ -1457,7 +1506,7 @@ async function exportPortfolioWord() {
     setTimeout(() => URL.revokeObjectURL(url), 3000);
   } catch (error) {
     console.error("Ошибка экспорта DOCX:", error);
-    alert(error.message || "Не удалось создать документ Word. Попробуй ещё раз.");
+    showNotice(error.message || "Не удалось создать документ Word. Попробуй ещё раз.");
   } finally {
     if (button) { button.disabled = false; button.textContent = "Скачать Word (.docx)"; }
   }
@@ -1465,7 +1514,7 @@ async function exportPortfolioWord() {
 
 function printPortfolio() {
   const popup = window.open("", "_blank");
-  if (!popup) return alert("Браузер заблокировал новое окно. Разреши всплывающие окна для сохранения PDF.");
+  if (!popup) return showNotice("Браузер заблокировал окно печати. Для PDF используй разрешённое браузером скачивание или открой портфолио на компьютере.", "warning");
   popup.document.open();
   popup.document.write(buildPortfolioHTML());
   popup.document.close();
@@ -1559,10 +1608,10 @@ function renderOpportunities() {
   document.getElementById("opp-add").addEventListener("click", () => {
     const get = id => document.getElementById(id).value.trim();
     const title = get("opp-title"), organizer = get("opp-organizer"), source = get("opp-source");
-    let parsed; try { parsed = new URL(source); } catch { return alert("Добавь ссылку на официальную страницу."); }
-    if (!title || !organizer || !["http:", "https:"].includes(parsed.protocol)) return alert("Нужны название, организатор и официальная ссылка.");
+    let parsed; try { parsed = new URL(source); } catch { return showNotice("Добавь ссылку на официальную страницу."); }
+    if (!title || !organizer || !["http:", "https:"].includes(parsed.protocol)) return showNotice("Нужны название, организатор и официальная ссылка.");
     items.push({ id: createId(), title, category: get("opp-category"), organizer, direction: get("opp-direction"), age: get("opp-age"), dates: get("opp-dates"), deadline: get("opp-deadline"), format: get("opp-format"), source, addedAt: new Date().toISOString() });
-    try { localStorage.setItem(key, JSON.stringify(items)); } catch { items.pop(); return alert("Не удалось сохранить запись. Проверь свободное место в браузере."); }
+    try { localStorage.setItem(key, JSON.stringify(items)); } catch { items.pop(); return showNotice("Не удалось сохранить запись. Проверь свободное место в браузере."); }
     ["opp-title","opp-organizer","opp-direction","opp-age","opp-dates","opp-deadline","opp-format","opp-source"].forEach(id => document.getElementById(id).value = "");
     draw();
   });
@@ -1590,7 +1639,7 @@ function renderAdmission() {
       <button class="primary-button" id="university-add">Сохранить учебное заведение</button></div>
     <div class="form-card"><h2>Мой список</h2><div id="university-list"></div></div></section>`;
   const list = document.getElementById("university-list");
-  function save() { try { localStorage.setItem(key, JSON.stringify(universities)); return true; } catch { alert("Не удалось сохранить список. Проверь свободное место в браузере."); return false; } }
+  function save() { try { localStorage.setItem(key, JSON.stringify(universities)); return true; } catch { showNotice("Не удалось сохранить список. Проверь свободное место в браузере."); return false; } }
   function draw() {
     list.innerHTML = universities.length ? universities.map(item => `<article class="content-card">
       <div class="list-row"><h3>${escapeHTML(item.name)}</h3><span class="tag">${escapeHTML(item.status || "Интересует")}</span></div>
@@ -1602,8 +1651,8 @@ function renderAdmission() {
   }
   document.getElementById("university-add").addEventListener("click", () => {
     const get = id => document.getElementById(id).value.trim();
-    const name = get("uni-name"), source = get("uni-source"); if (!name) return alert("Укажи название учебного заведения.");
-    if (source) { try { if (!["http:", "https:"].includes(new URL(source).protocol)) throw Error(); } catch { return alert("Проверь ссылку на официальный сайт."); } }
+    const name = get("uni-name"), source = get("uni-source"); if (!name) return showNotice("Укажи название учебного заведения.");
+    if (source) { try { if (!["http:", "https:"].includes(new URL(source).protocol)) throw Error(); } catch { return showNotice("Проверь ссылку на официальный сайт."); } }
     universities.push({ id: createId(), name, city: get("uni-city"), country: "", direction: get("uni-direction"), level: get("uni-level"), exams: get("uni-exams"), deadline: get("uni-deadline"), source, status: get("uni-status") });
     if (!save()) { universities.pop(); return; }
     ["uni-name","uni-city","uni-direction","uni-exams","uni-deadline","uni-source"].forEach(id => document.getElementById(id).value = ""); draw();
@@ -1761,7 +1810,7 @@ document.addEventListener("click", event => {
       done: false
     });
     saveData();
-    alert("Задание добавлено в твой маршрут.");
+    showNotice("Задание добавлено в твой маршрут.");
     return;
   }
 
@@ -1770,13 +1819,13 @@ document.addEventListener("click", event => {
     const key = "navigator_universities_v1"; let universities = readStorage(key, []);
     if (!Array.isArray(universities)) universities = [];
     universities = universities.filter(item => (typeof item === "string" ? item : item.id) !== universityDelete.dataset.universityDelete);
-    try { localStorage.setItem(key, JSON.stringify(universities)); } catch { alert("Не удалось обновить список."); return; }
+    try { localStorage.setItem(key, JSON.stringify(universities)); } catch { showNotice("Не удалось обновить список."); return; }
     renderAdmission(); return;
   }
   const educationDelete = event.target.closest("[data-edu-delete]");
-  if (educationDelete) { const key = "navigator_education_v1"; let items = readStorage(key, []); items.splice(Number(educationDelete.dataset.eduDelete), 1); try { localStorage.setItem(key, JSON.stringify(items)); } catch { return alert("Не удалось обновить список."); } renderEducation(); return; }
+  if (educationDelete) { const key = "navigator_education_v1"; let items = readStorage(key, []); items.splice(Number(educationDelete.dataset.eduDelete), 1); try { localStorage.setItem(key, JSON.stringify(items)); } catch { return showNotice("Не удалось обновить список."); } renderEducation(); return; }
   const opportunityDelete = event.target.closest("[data-opp-delete]");
-  if (opportunityDelete) { const key = "navigator_opportunities_v1"; let items = readStorage(key, []); items.splice(Number(opportunityDelete.dataset.oppDelete), 1); try { localStorage.setItem(key, JSON.stringify(items)); } catch { return alert("Не удалось обновить каталог."); } renderOpportunities(); }
+  if (opportunityDelete) { const key = "navigator_opportunities_v1"; let items = readStorage(key, []); items.splice(Number(opportunityDelete.dataset.oppDelete), 1); try { localStorage.setItem(key, JSON.stringify(items)); } catch { return showNotice("Не удалось обновить каталог."); } renderOpportunities(); }
 });
 
 document.addEventListener("click", event => {
